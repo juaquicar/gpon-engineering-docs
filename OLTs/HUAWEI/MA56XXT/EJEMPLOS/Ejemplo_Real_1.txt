@@ -1,0 +1,149 @@
+****************************************************
+***             PUESTA EN MARCHA                ****
+****************************************************
+
+vlan 100 smart
+vlan 200 smart
+vlan 400 smart
+vlan 500 smart
+vlan desc 100 description INTERNET
+vlan desc 200 description VOIP
+vlan desc 400 description IPTV
+vlan desc 500 description MANAGEMENT
+port vlan 100 0/17 0
+port vlan 200 0/17 0
+port vlan 400 0/17 0
+port vlan 500 0/17 0
+
+interface vlanif 200
+ip address 172.20.0.2 22 description "lan_200_voip"
+quit
+interface vlanif 400
+ip address 172.20.20.2 22 description "lan_400_iptv"
+quit
+interface vlanif 500
+ip address 10.0.0.2 22 description "lan_500_management"
+quit
+
+
+dba-profile add profile-id 50 profile-name "OMCI_DBA" type2 assure 5056
+dba-profile add profile-id 100 profile-name "VOIP" type1 fix 1024
+dba-profile add profile-id 101 profile-name "GESTION2MFIXED" type1 fix 1024
+dba-profile add profile-id 102 profile-name "UPINTERNET005M" type3 assure 1024 max 5120
+dba-profile add profile-id 103 profile-name "UPINTERNET010M" type3 assure 2048 max 10240
+dba-profile add profile-id 104 profile-name "UPINTERNET030M" type3 assure 3072 max 30067 
+dba-profile add profile-id 105 profile-name "UPINTERNET050M" type3 assure 5120 max 50112
+dba-profile add profile-id 106 profile-name "UPINTERNET100M" type3 assure 10240 max 100224
+dba-profile add profile-id 107 profile-name "UPINTERNET150M" type3 assure 15360 max 153600
+dba-profile add profile-id 108 profile-name "UPINTERNET300M" type3 assure 30720 max 300672
+dba-profile add profile-id 109 profile-name "UPINTERNET400M" type3 assure 40960 max 400896
+dba-profile add profile-id 110 profile-name "UPINTERNET1024M" type3 assure 100960 max 1024896
+
+traffic table ip index 99 cir 1024 pir 1024 priority 6 priority-policy local-Setting
+traffic table ip index 100 cir 2048 pir 2048 priority 5 priority-policy local-Setting
+traffic table ip index 101 cir 5120 pir 5120 priority 0 priority-policy local-Setting
+traffic table ip index 102 cir 10240 pir 10240 priority 0 priority-policy local-Setting
+traffic table ip index 103 cir 30067 pir 30067 priority 0 priority-policy local-Setting
+traffic table ip index 104 cir 50112 pir 50112 priority 0 priority-policy local-Setting
+traffic table ip index 105 cir 100224 pir 100224 priority 0 priority-policy local-Setting
+traffic table ip index 106 cir 153600 pir 153600 priority 0 priority-policy local-Setting
+traffic table ip index 107 cir 300672 pir 300672 priority 0 priority-policy local-Setting
+traffic table ip index 108 cir 400896 pir 400896 priority 0 priority-policy local-Setting
+traffic table ip index 109 cir 1024896 pir 1024896 priority 0 priority-policy local-Setting
+
+
+ont-srvprofile gpon profile-id 10 profile-name "ADAPTIVE"
+ont-port pots adaptive eth adaptive catv adaptive
+commit
+quit
+ont-srvprofile gpon profile-id 11 profile-name "HG8010H"
+ont-port eth 1 
+port vlan eth 1 transparent 
+commit
+quit
+ont-srvprofile gpon profile-id 12 profile-name "HG8245A"
+ont-port pots 2 eth 4 
+port vlan eth 1 transparent 
+port vlan eth 2 transparent 
+port vlan eth 3 transparent 
+port vlan eth 4 transparent        
+commit
+quit
+ont-srvprofile gpon profile-id 13 profile-name "HG8247H"
+ont-port pots 2 eth 4 catv 1 
+port vlan eth 1 transparent 
+port vlan eth 2 transparent 
+port vlan eth 3 transparent 
+port vlan eth 4 transparent 
+commit
+quit
+ont-srvprofile gpon profile-id 14 profile-name "HG8346M"
+ont-port pots 2 eth 4  
+port vlan eth 1 transparent 
+port vlan eth 2 transparent 
+port vlan eth 3 transparent 
+port vlan eth 4 transparent 
+commit
+quit
+
+
+ont-lineprofile gpon profile-id 10 profile-name "Line-Profile-GENERICO"
+fec-upstream enable
+tr069-management enable
+tr069-management ip-index 0
+tcont 0 dba-profile-id 50
+tcont 1 dba-profile-id 110
+tcont 2 dba-profile-id 100
+tcont 3 dba-profile-id 101
+gem add 1 eth tcont 1 encrypt on
+gem add 2 eth tcont 2 encrypt on
+gem add 3 eth tcont 3 encrypt on
+gem mapping 1 1 vlan 100
+gem mapping 2 2 vlan 200
+gem mapping 3 3 vlan 500
+commit
+quit
+
+
+ont-lineprofile gpon profile-id 11 profile-name "Line-Profile-HG8010"
+tcont 4 dba-profile-id 110
+gem add 1 eth tcont 4
+mapping-mode vlan
+gem mapping 1 0 vlan 100
+commit
+quit
+
+
+interface gpon 0/9
+port 0 ont-auto-find enable
+port 0 fec enable
+port 1 ont-auto-find enable
+port 1 fec enable
+port 2 ont-auto-find enable
+port 2 fec enable
+port 3 ont-auto-find enable
+port 3 fec enable
+port 4 ont-auto-find enable
+port 4 fec enable
+port 5 ont-auto-find enable
+port 5 fec enable
+port 6 ont-auto-find enable
+port 6 fec enable
+port 7 ont-auto-find enable
+port 7 fec enable
+port 8 ont-auto-find enable
+port 8 fec enable
+port 9 ont-auto-find enable
+port 9 fec enable
+port 10 ont-auto-find enable
+port 10 fec enable
+port 11 ont-auto-find enable
+port 11 fec enable
+port 12 ont-auto-find enable
+port 12 fec enable
+port 13 ont-auto-find enable
+port 13 fec enable
+port 14 ont-auto-find enable
+port 14 fec enable
+port 15 ont-auto-find enable
+port 15 fec enable

@@ -1,0 +1,2 @@
+traffic table ip index 110 cir 15360 cbs 9855040 pir 30720 pbs 985040 priority 0 priority-policy local-Setting
+traffic table ip index 114 cir 102400 cbs 3278800 pir 302400 pbs 985040 priority 0 priority-policy local-Setting

@@ -1,0 +1,3330 @@
+-- =================================================================
+-- Copyright (C) 2016 by HUAWEI TECHNOLOGIES. All rights reserved.
+-- Description:  The MIB is used for defining Huawei's EQAM attribute.
+-- Reference:    None
+-- Version:      V1.09
+-- =================================================================
+
+HUAWEI-EQAM-AN-MIB DEFINITIONS ::= BEGIN
+
+        IMPORTS
+            huaweiUtility
+                FROM HUAWEI-MIB
+            EnabledStatus
+                FROM P-BRIDGE-MIB
+            VlanId
+                FROM Q-BRIDGE-MIB
+            OBJECT-GROUP, NOTIFICATION-GROUP
+                FROM SNMPv2-CONF
+            ifIndex, InterfaceIndex, InterfaceIndexOrZero
+                FROM IF-MIB
+            Integer32, Unsigned32, OBJECT-TYPE, MODULE-IDENTITY, OBJECT-IDENTITY,
+            NOTIFICATION-TYPE, TimeTicks, Counter32, Counter64
+                FROM SNMPv2-SMI
+            RowStatus,DisplayString, TruthValue
+                FROM SNMPv2-TC
+            ChannelList                                             
+                FROM DOCS-IF3-MIB
+            InetAddressType, InetAddress, InetPortNumber
+                FROM INET-ADDRESS-MIB;
+
+
+        hwEqamAn MODULE-IDENTITY
+            LAST-UPDATED "201603150000Z"
+            ORGANIZATION "Huawei Technologies Co.,Ltd."
+            CONTACT-INFO
+                         "Huawei Industrial Base
+                         Bantian, Longgang
+                         Shenzhen 518129
+                         People's Republic of China
+                         Website: http://www.huawei.com
+                         Email: support@huawei.com
+                         "
+        DESCRIPTION
+            "The MIB is used for defining Huawei's EQAM attribute.
+            "
+
+        --  Revision history
+            REVISION     "201603150000Z"
+            DESCRIPTION  "V1.09, added hwDocsQamNGODEdgeDevicelocalIfType and hwDocsQamNGODEdgeDevicelocalIfNumbe to hwDocsQamNGODEdgeDeviceTable.              
+                         Added hwDocsQamGratuitousArpPeriodSendMode to hwDocsQamVideoGlobalConfigObject.             
+	                 "
+	
+            REVISION     "201602240000Z"
+            DESCRIPTION  "V1.08, Modified description of hwDocsQamInputTSIndex.
+	                 Modified  description of hwDocsQamDVBDomainRowStatus.
+	                 Modified description of hwDocsQamVODPortConfigRowStatus.
+	                 Modified description of hwDocsQamDVBPortConfigRowStatus.              
+	                 "	
+	
+            REVISION     "201601280000Z"
+            DESCRIPTION  "V1.07, Modified oid of hwDocsQamMulticastVlanId and hwDocsQamSecondaryMulticastVlanId.
+	                 Modified oid of hwDocsQamVideoMapMode, hwDocsQamVideoMapNITRemap, hwDocsQamVideoMapFilterPIDList and hwDocsQamVideoMapInputTsIndex.
+	                 Modified oid of hwDocsQamVideoDomainUDPPortStep and hwDocsQamVideoDomainBindVideoProfile.
+	                 Modified oid of hwDocsQamVideoStreamSourceIpAddressType, hwDocsQamVideoStreamSourceIpAddress and hwDocsQamVideoStreamDiscontinuityCounter.              
+	                 "
+        
+            REVISION     "201601040000Z"
+            DESCRIPTION  "V1.06, deleted hwDocsQamAutoConfigMulticastVlanId of hwDocsQamVideoGlobalConfigObject, 
+	                 added hwDocsQamMulticastVlanId and hwDocsQamSecondaryMulticastVlanId to hwDocsQamVideoGlobalConfigObject.
+			 Deleted hwDocsQamVideoDomainMulticastVlanID of hwDocsQamVideoDomainTable, 
+			 added hwDocsQamVideoDomainBindVideoProfile and hwDocsQamVideoDomainUDPPortStep to hwDocsQamVideoDomainTable.
+			 Deleted hwDocsQamVideoMapMulticastIPAddrType and hwDocsQamVideoMapMulticastIPAddr of HwDocsQamVideoMapEntry, 
+			 added hwDocsQamVideoMapInputTsIndex to HwDocsQamVideoMapEntry.
+			 Deleted hwDocsQamVideoDomainBindTable.
+			 Deleted hwDocsQamVideoStreamConfigState, hwDocsQamVideoStreamMapMode, hwDocsQamVideoStreamProgramNum, 
+			 hwDocsQamVideoStreamNITRemap and hwDocsQamVideoStreamFilterPIDList of HwDocsQamVideoStreamEntry, 
+			 added hwDocsQamVideoStreamSourceIpAddressType, hwDocsQamVideoStreamSourceIpAddress and 
+			 hwDocsQamVideoStreamDiscontinuityCounter to HwDocsQamVideoStreamEntry.
+			 Modified name of hwDocsQamVideoInputStreamCountOfJitterOverrun to hwDocsQamVideoInputStreamCountOfJitterOverflow,
+			 Modified name of hwDocsQamVideoInputStreamCountOfJitterUnderrun to hwDocsQamVideoInputStreamCountOfJitterUnderflow.
+			 added hwDocsQamVideoInputTSDiscontinuityCounter to HwDocsQamVideoInputStreamStatisticsEntry.
+                         Added hwDocsQamDVBDomainTable, hwDocsQamInputTSTable, hwDocsQamVODPortConfigTable, hwDocsQamDVBPortConfigTable, 
+			 hwDocsQamInputTSStateTable, hwDocsQamInputTSProgramTable, hwDocsQamOutputTSProgramTable, hwDocsQamDVBInputTSStatisticsTable,
+			 hwDocsQamNotificationObject, hwDocsQamDVBPATErrorTrap, hwDocsQamDVBPATMissingTrap, hwDocsQamDVBPMTErrorTrap,
+			 hwDocsQamDVBPMTMissingTrap and hwDocsQamDVBContinutyCounterErrorTrap.                         
+	                 "
+	                 
+            REVISION     "201507070000Z"
+            DESCRIPTION  "V1.05, added hwDocsQamAutoConfigMulticastVlanId to hwDocsQamVideoGlobalConfigObject.
+                         Added hwDocsQamVideoMapMulticastIPAddrType, hwDocsQamVideoMapMulticastIPAddr, hwDocsQamVideoMapMode,
+                         hwDocsQamVideoMapNITRemap and hwDocsQamVideoMapFilterPIDList to hwDocsQamVideoMapTable.
+                         Modified description of hwDocsQamVideoMapUdpPort and hwDocsQamVideoMapPmtPid to hwDocsQamVideoMapTable.
+                         Added hwDocsQamVideoDomainMulticastVlanID to hwDocsQamVideoDomainTable.
+                         Added hwDocsQamVideoStreamConfigState, hwDocsQamVideoStreamMapMode, hwDocsQamVideoStreamProgramNum,
+                         hwDocsQamVideoStreamNITRemap and hwDocsQamVideoStreamFilterPIDList to hwDocsQamVideoStreamTable.
+                         Modified description of hwDocsQamVideoStreamDestinationUdpPort to hwDocsQamVideoStreamTable.
+                         Added hwDocsQamVideoStreamMPTSProgramTable.
+	                 "
+        
+            REVISION     "201505270000Z"
+            DESCRIPTION  "V1.04, Modified the SYNTAX of hwDocsQamNGODEdgeDeviceEdgeInputIfindex from InterfaceIndexOrZero to Unsigned32.
+	                 "
+        
+            REVISION     "201502170000Z"
+            DESCRIPTION  "V1.03, added hwDocsQamNGODEdgeDeviceRecvNotificationErrPkts to hwDocsQamNGODEdgeDeviceStatisticsTable.
+	                 "
+        
+            REVISION     "201501220000Z"                                      
+	    DESCRIPTION  "V1.02, Added hwDocsQamNGODEdgeDeviceTable, hwDocsQamNGODEdgeDeviceEdgeInputTable, hwDocsQamNGODEdgeDeviceStatisticsTable and hwDocsQamChannelTable"
+        
+	    REVISION     "201405280000Z"                                      
+	    DESCRIPTION  "V1.01, add the node hwDocsQamVideoStreamTraffic."
+	            
+            REVISION     "201310100000Z"
+            DESCRIPTION  "V1.00, initial version."
+
+        ::= { huaweiUtility 187 }
+--  Node definitions
+
+        -- 1.3.6.1.4.1.2011.6.187.1
+        hwDocsQamVideoGlobalConfigObject   OBJECT IDENTIFIER ::= { hwEqamAn 1 }
+        
+        -- 1.3.6.1.4.1.2011.6.187.1.1
+        hwDocsQamVideoTimeOutInterval  OBJECT-TYPE
+            SYNTAX      Integer32 (1..6000)
+            UNITS       "second"
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "Indicates the video timeout interval.
+                 Default: 60
+                "
+            ::= { hwDocsQamVideoGlobalConfigObject 1 }
+
+        -- 1.3.6.1.4.1.2011.6.187.1.2
+        hwDocsQamAutoConfigIppoolAddressType  OBJECT-TYPE
+            SYNTAX      InetAddressType
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "Indicates the address type of the address pool. Only IPv4 addresses are supported.
+                "
+            ::= { hwDocsQamVideoGlobalConfigObject 2 }
+                  
+        -- 1.3.6.1.4.1.2011.6.187.1.3
+        hwDocsQamAutoConfigIppoolStartAddress  OBJECT-TYPE
+            SYNTAX      InetAddress
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "Indicates the start address of the address pool. 
+                 To delete an IP address pool, bind hwDocsQamAutoConfigIppoolStartAddress and hwDocsQamAutoConfigIppoolEndAddress together and set their values to 0xff 0xff 0xff 0xff.
+                 The value of hwDocsQamAutoConfigIppoolStartAddress or hwDocsQamAutoConfigIppoolEndAddress must be set to a valid unicast IP address in other scenarios.
+                "
+            ::= { hwDocsQamVideoGlobalConfigObject 3 }
+      
+        -- 1.3.6.1.4.1.2011.6.187.1.4
+        hwDocsQamAutoConfigIppoolEndAddress  OBJECT-TYPE
+            SYNTAX      InetAddress
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "Indicates the end address of the address pool.
+                 To delete an IP address pool, bind hwDocsQamAutoConfigIppoolStartAddress and hwDocsQamAutoConfigIppoolEndAddress together and set their values to 0xff 0xff 0xff 0xff.
+                 The value of hwDocsQamAutoConfigIppoolStartAddress or hwDocsQamAutoConfigIppoolEndAddress must be set to a valid unicast IP address in other scenarios.
+                "
+            ::= { hwDocsQamVideoGlobalConfigObject 4 }
+      
+        -- 1.3.6.1.4.1.2011.6.187.1.5
+        hwDocsQamAutoConfigIppoolVlanId  OBJECT-TYPE
+            SYNTAX      Integer32 (-1|1..4093)
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "Indicates the VLAN ID of the video domain. The default value is -1, indicating that the VLAN ID is invalid.
+                "
+            ::= { hwDocsQamVideoGlobalConfigObject 5 }
+      
+        -- 1.3.6.1.4.1.2011.6.187.1.6
+        hwDocsQamAutoConfigVideoProfile  OBJECT-TYPE
+            SYNTAX      OCTET STRING (SIZE (0..15))
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "Automatically pre-configures the name of the video profile.
+                "
+            ::= { hwDocsQamVideoGlobalConfigObject 6 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.1.8
+        hwDocsQamMulticastVlanId  OBJECT-TYPE
+            SYNTAX      Integer32 (-1|1..4093)
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "Indicates the multicast VLAN ID of the video service. The default value is -1, indicating that the multicast VLAN ID is invalid.
+                "
+            ::= { hwDocsQamVideoGlobalConfigObject 8 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.1.9
+        hwDocsQamSecondaryMulticastVlanId  OBJECT-TYPE
+            SYNTAX      Integer32 (-1|1..4093)
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "Indicates the secondary multicast VLAN ID. The default value is -1, indicating that the multicast VLAN ID is invalid.
+                "
+            ::= { hwDocsQamVideoGlobalConfigObject 9 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.1.10
+        hwDocsQamGratuitousArpPeriodSendMode  OBJECT-TYPE
+            SYNTAX      INTEGER
+                  {
+                  enabled(1),
+                  disabled(2)
+                  }
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "Indicates the gratuitous ARP period send mode, the default value is disabled(2).
+                 Options: 
+                 1. enabled(1)      -indicates the gratuitous ARP period send mode is enabled
+                 2. disabled(2)     -indicates the gratuitous ARP period send mode is disabled
+                "
+            ::= { hwDocsQamVideoGlobalConfigObject 10 }            
+    
+        -- 1.3.6.1.4.1.2011.6.187.2
+        hwDocsQamVideoProfileTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamVideoProfileEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the video profile table used to manage information including video mapping.
+                 The index of this table is hwDocsQamVideoProfileName.
+                "
+            ::= { hwEqamAn 2 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.2.1
+        hwDocsQamVideoProfileEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamVideoProfileEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the video profile table used to manage information including video mapping.
+                 The index of this entry is hwDocsQamVideoProfileName.
+                "
+            INDEX   
+                { 
+                hwDocsQamVideoProfileName
+                }
+            ::= { hwDocsQamVideoProfileTable  1 }
+        
+        HwDocsQamVideoProfileEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamVideoProfileName
+                  OCTET STRING,
+                hwDocsQamVideoProfileRowStatus
+                  RowStatus   
+                }
+        
+        -- 1.3.6.1.4.1.2011.6.187.2.1.1   
+        hwDocsQamVideoProfileName        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (1..15))
+            MAX-ACCESS   not-accessible
+            STATUS       current
+            DESCRIPTION
+              "Indicates the video profile name. 
+              "
+            ::= { hwDocsQamVideoProfileEntry 1}
+          
+        -- 1.3.6.1.4.1.2011.6.187.2.1.2 
+        hwDocsQamVideoProfileRowStatus        OBJECT-TYPE
+            SYNTAX       RowStatus
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Row status, used to query, create, modify, and delete a video profile table. 
+                 It supports the active(1), createAndGo(4), and destroy(6) operations.
+                 During query, the value of this leaf is always active(1).
+                 During deletion, specify the value of this leaf to destroy(6).
+                 During creation, specify the value of this leaf to createAndGo(4).
+                 To modify the parameters of a video profile table, this leaf need not be issued together.
+                 Options:
+                 1. active(1)      -indicates the query operation
+                 2. createAndGo(4) -indicates the creating operation
+                 3. destroy(6)     -indicates the deleting operation
+                "
+            ::= { hwDocsQamVideoProfileEntry 2}
+          
+        -- 1.3.6.1.4.1.2011.6.187.3
+        hwDocsQamVideoMapTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamVideoMapEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the video mapping table used to configure the mapping between video streams and cable channels.
+                 The indexes of this table are hwDocsQamVideoProfileName and hwDocsQamVideoMapIndex.
+                "
+            ::= { hwEqamAn 3 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.3.1
+        hwDocsQamVideoMapEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamVideoMapEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the video mapping table used to configure the mapping between video streams and cable channels.
+                 The indexes of this entry are hwDocsQamVideoProfileName and hwDocsQamVideoMapIndex.
+                "
+            INDEX   
+                { 
+                hwDocsQamVideoProfileName,
+                hwDocsQamVideoMapIndex
+                }
+            ::= { hwDocsQamVideoMapTable  1 }
+        
+        HwDocsQamVideoMapEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamVideoMapIndex
+                  Unsigned32,
+                hwDocsQamVideoMapUdpPort
+                  InetPortNumber,
+                hwDocsQamVideoMapStreamType
+                  INTEGER,
+                hwDocsQamVideoMapInputProgram
+                  Integer32,
+                hwDocsQamVideoMapOutputProgram
+                  Integer32,
+                hwDocsQamVideoMapJitter
+                  Integer32,
+                hwDocsQamVideoMapPmtPid
+                  Integer32,
+                hwDocsQamVideoMapChannelList
+                  ChannelList,
+                hwDocsQamVideoMapRowStatus
+                  RowStatus,
+                hwDocsQamVideoMapMode
+                  INTEGER,
+                hwDocsQamVideoMapNITRemap
+                  Integer32,
+                hwDocsQamVideoMapFilterPIDList
+                  OCTET STRING,
+                hwDocsQamVideoMapInputTsIndex
+                  Integer32
+                }
+        
+        -- 1.3.6.1.4.1.2011.6.187.3.1.1   
+        hwDocsQamVideoMapIndex        OBJECT-TYPE
+            SYNTAX      Unsigned32 (1..65535|4294967295)
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "Indicates the index of a video mapping table. 
+                 You can also fill 4294967295 and the system will automatically allocate an index.
+                "
+            ::= { hwDocsQamVideoMapEntry 1 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.3.1.2   
+        hwDocsQamVideoMapUdpPort        OBJECT-TYPE
+            SYNTAX      InetPortNumber
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the UDP port number. The default value is 0, indicating that the UDP port number is invalid.
+                 Range: 0-65535
+                "
+            ::= { hwDocsQamVideoMapEntry 2 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.3.1.3   
+        hwDocsQamVideoMapStreamType        OBJECT-TYPE
+            SYNTAX      INTEGER
+                  {
+                  data(1),
+                  spts(2),
+                  mpts(3),
+                  plant(4)
+                  }
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the program stream type.
+                 Options: 
+                 1. data(1)   -indicates the data type
+                 2. spts(2)   -indicates the spts type
+                 3. mpts(3)   -indicates the mpts type
+                 4. plant(4)  -indicates the plant type
+                "
+            ::= { hwDocsQamVideoMapEntry 3 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.3.1.4   
+        hwDocsQamVideoMapInputProgram        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|1..65535)
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the program ID of the input stream. The default value is -1, indicating that the program ID is ignored.
+                "
+            ::= { hwDocsQamVideoMapEntry 4 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.3.1.5   
+        hwDocsQamVideoMapOutputProgram        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|1..65535)
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the program ID of the output stream. The default value is -1, indicating that the program ID is ignored.
+                "
+            ::= { hwDocsQamVideoMapEntry 5 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.3.1.6   
+        hwDocsQamVideoMapJitter        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..250)
+            UNITS       "millisecond"
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the network jitter allowed. 
+                 If hwDocsQamVideoMapStreamType is data, the default value is -1, indicating that network jitter is ignored.
+                 If hwDocsQamVideoMapStreamType is spts or mpts, the default value is 100.
+                "
+            ::= { hwDocsQamVideoMapEntry 6 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.3.1.7   
+        hwDocsQamVideoMapPmtPid        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|32..8190)
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the PMT PID of the output program.
+                 If hwDocsQamVideoMapStreamType is data or mpts, the default value is -1, indicating that output programs' PMT PIDs are ignored.
+                "
+            ::= { hwDocsQamVideoMapEntry 7 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.3.1.8   
+        hwDocsQamVideoMapChannelList        OBJECT-TYPE
+            SYNTAX      ChannelList
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the channel list for output videos.
+                "
+            ::= { hwDocsQamVideoMapEntry 8 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.3.1.9
+        hwDocsQamVideoMapRowStatus        OBJECT-TYPE
+            SYNTAX       RowStatus
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Row status, used to query, create, modify, and delete a video mapping table. 
+                 It supports the active(1), createAndGo(4), and destroy(6) operations.
+                 During query, the value of this leaf is always active(1).
+                 During deletion, specify the value of this leaf to destroy(6).
+                 During creation, specify the value of this leaf to createAndGo(4).
+                 To modify the parameters of a video mapping table, this leaf need not be issued together.
+                 Options:
+                 1. active(1)      -indicates the query operation
+                 2. createAndGo(4) -indicates the creating operation
+                 3. destroy(6)     -indicates the deleting operation
+                "
+            ::= { hwDocsQamVideoMapEntry 9}
+            
+        -- 1.3.6.1.4.1.2011.6.187.3.1.12  
+        hwDocsQamVideoMapMode        OBJECT-TYPE
+            SYNTAX      INTEGER
+                  {
+                  passthrough(1),
+                  invalid(255)
+                  }
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the video stream map mode, the default value is invalid(255).
+                 Options: 
+                 1. passthrough(1)   -indicates the MPTS video stream mode is passthrough
+                 2. invalid(255)     -indicates the video stream mode is ignored if hwDocsQamVideoMapStreamType is not mpts
+                "
+            ::= { hwDocsQamVideoMapEntry 12 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.3.1.13   
+        hwDocsQamVideoMapNITRemap        OBJECT-TYPE
+            SYNTAX      Integer32 (-1 | 16 | 32..8190)
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the output NIT PID which the input NIT PID mapped to. 
+                 If hwDocsQamVideoMapStreamType is not mpts, the default value is always -1, indicating that the NIT remap PID is ignored.
+                 If hwDocsQamVideoMapStreamType is mpts, vlaue -1 means cancel the NIT remap.
+                "
+            ::= { hwDocsQamVideoMapEntry 13 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.3.1.14   
+        hwDocsQamVideoMapFilterPIDList        OBJECT-TYPE
+            SYNTAX      OCTET STRING (SIZE (0..64))
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the filter PID list which are not allowed to forward.
+                 Filter PID consists of two bytes and no greater than 8190. 
+                 Max of 32 filter PIDs can be configured for each video mapping.
+                 If hwDocsQamVideoMapStreamType is not mpts, the default value is always null string, indicating that the filter PID is ignored. 
+                 If hwDocsQamVideoMapStreamType is mpts, the default value null string means cancel the PID filter.
+                "
+            ::= { hwDocsQamVideoMapEntry 14 }
+
+        -- 1.3.6.1.4.1.2011.6.187.3.1.15
+        hwDocsQamVideoMapInputTsIndex   OBJECT-TYPE
+            SYNTAX       Integer32 (-1|1..65535)
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Indicates the index of the transport stream, the default value is -1, indicating that the index of the transport stream is ignored.
+                "
+            ::= { hwDocsQamVideoMapEntry 15}
+  
+  
+        -- 1.3.6.1.4.1.2011.6.187.4
+        hwDocsQamVideoDomainTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamVideoDomainEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the video domain table used to manage information, such as EQAM's IP address.
+                 The index of this table is hwDocsQamVideoDomainName.
+                "
+            ::= { hwEqamAn 4 }
+        
+        -- 1.3.6.1.4.1.2011.6.187.4.1
+        hwDocsQamVideoDomainEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamVideoDomainEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the video domain table used to manage information, such as EQAM's IP address.
+                 The index of this entry is hwDocsQamVideoDomainName.
+                "
+            INDEX   
+                { 
+                hwDocsQamVideoDomainName
+                }
+            ::= { hwDocsQamVideoDomainTable  1 }
+            
+        HwDocsQamVideoDomainEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamVideoDomainName
+                  OCTET STRING,
+                hwDocsQamVideoDomainLocalIpAddress
+                  InetAddress,
+                hwDocsQamVideoDomainLocalIpAddressType
+                  InetAddressType,
+                hwDocsQamVideoDomainLocalVlanID
+                  Integer32,
+                hwDocsQamVideoDomainRowStatus
+                  RowStatus,
+                hwDocsQamVideoDomainUDPPortStep
+                  Unsigned32,
+                hwDocsQamVideoDomainBindVideoProfile
+                  OCTET STRING
+                }
+            
+        -- 1.3.6.1.4.1.2011.6.187.4.1.1   
+        hwDocsQamVideoDomainName        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (1..15))
+            MAX-ACCESS   not-accessible
+            STATUS       current
+            DESCRIPTION
+              "Indicates the video domain name.
+              "
+            ::= { hwDocsQamVideoDomainEntry 1 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.4.1.2   
+        hwDocsQamVideoDomainLocalIpAddress        OBJECT-TYPE
+            SYNTAX       InetAddress
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+              "Indicates the local IP address of the video domain.
+              "
+            ::= { hwDocsQamVideoDomainEntry 2 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.4.1.3   
+        hwDocsQamVideoDomainLocalIpAddressType        OBJECT-TYPE
+            SYNTAX       InetAddressType
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+              "Indicates the local IP address type of the local end.
+              "
+            ::= { hwDocsQamVideoDomainEntry 3 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.4.1.4   
+        hwDocsQamVideoDomainLocalVlanID        OBJECT-TYPE
+            SYNTAX       Integer32 (-1|1..4093)
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+              "Indicates the local VLAN ID of the video domain. The default value is -1, indicating that the local VLAN ID is invalid.
+              "
+            ::= { hwDocsQamVideoDomainEntry 4 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.4.1.5 
+        hwDocsQamVideoDomainRowStatus        OBJECT-TYPE
+            SYNTAX       RowStatus
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Row status, used to query, create, modify, and delete a video domain table. 
+                 It supports the active(1), createAndGo(4), and destroy(6) operations.
+                 During query, the value of this leaf is always active(1).
+                 During deletion, specify the value of this leaf to destroy(6).
+                 During creation, specify the value of this leaf to createAndGo(4).
+                 To modify the parameters of a video domain table, this leaf need not be issued together.
+                 Options:
+                 1. active(1)      -indicates the query operation
+                 2. createAndGo(4) -indicates the creating operation
+                 3. destroy(6)     -indicates the deleting operation
+                "
+            ::= { hwDocsQamVideoDomainEntry 5 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.4.1.7   
+        hwDocsQamVideoDomainUDPPortStep        OBJECT-TYPE
+            SYNTAX       Unsigned32(1..10000)
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+              "Indicates the step of udp port. The default value is 512.
+              "
+            ::= { hwDocsQamVideoDomainEntry 7 }
+
+        -- 1.3.6.1.4.1.2011.6.187.4.1.8   
+        hwDocsQamVideoDomainBindVideoProfile        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (0..15))
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+              "Indicates the bind video profile name.
+              "
+            ::= { hwDocsQamVideoDomainEntry 8 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.6
+        hwDocsQamChannelProfileTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamChannelProfileEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the EQAM channel profile table used for managing parameters related to channels.
+                 The index of this table is hwDocsQamChannelProfileName.
+                "
+            ::= { hwEqamAn 6 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.6.1
+        hwDocsQamChannelProfileEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamChannelProfileEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the EQAM channel profile table used for managing parameters related to channels.
+                 The index of this entry is hwDocsQamChannelProfileName.
+                "
+            INDEX   
+                { 
+                hwDocsQamChannelProfileName
+                }
+            ::= { hwDocsQamChannelProfileTable  1 }
+        
+        HwDocsQamChannelProfileEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamChannelProfileName
+                  OCTET STRING,
+                hwDocsQamChannelProfileTransportStreamID
+                  Integer32,
+                hwDocsQamChannelProfilePATSendPeriod
+                  Integer32,
+                hwDocsQamChannelProfilePMTSendPeriod
+                  Integer32,
+                hwDocsQamChannelProfileRowStatus
+                  RowStatus   
+                }
+        
+        -- 1.3.6.1.4.1.2011.6.187.6.1.1   
+        hwDocsQamChannelProfileName        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (1..15))
+            MAX-ACCESS   not-accessible
+            STATUS       current
+            DESCRIPTION
+              "Indicates the name of the channel profile table.
+              "
+            ::= { hwDocsQamChannelProfileEntry 1 }
+      
+        -- 1.3.6.1.4.1.2011.6.187.6.1.2
+        hwDocsQamChannelProfileTransportStreamID        OBJECT-TYPE
+            SYNTAX      Integer32 (0..65535)
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the transport stream ID.
+                "
+            DEFVAL { 0 }
+            ::= { hwDocsQamChannelProfileEntry 2 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.6.1.3
+        hwDocsQamChannelProfilePATSendPeriod        OBJECT-TYPE
+            SYNTAX      Integer32 (30..1000)
+            UNITS       "millisecond"
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the PAT send interval.
+                "
+            DEFVAL { 100 }
+            ::= { hwDocsQamChannelProfileEntry 3 }
+      
+        -- 1.3.6.1.4.1.2011.6.187.6.1.4
+        hwDocsQamChannelProfilePMTSendPeriod        OBJECT-TYPE
+            SYNTAX      Integer32 (30..1000)
+            UNITS       "millisecond"
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the PMT send interval.
+                "
+            DEFVAL { 100 }
+            ::= { hwDocsQamChannelProfileEntry 4 }
+      
+        -- 1.3.6.1.4.1.2011.6.187.6.1.5 
+        hwDocsQamChannelProfileRowStatus        OBJECT-TYPE
+            SYNTAX       RowStatus
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Row status, used to query, create, modify, and delete a channel profile table. 
+                 It supports the active(1), createAndGo(4), and destroy(6) operations.
+                 During query, the value of this leaf is always active(1).
+                 During deletion, specify the value of this leaf to destroy(6).
+                 During creation, specify the value of this leaf to createAndGo(4).
+                 To modify the parameters of a channel profile table, this leaf need not be issued together.
+                 Options:
+                 1. active(1)      -indicates the query operation
+                 2. createAndGo(4) -indicates the creating operation
+                 3. destroy(6)     -indicates the deleting operation
+                "
+            ::= { hwDocsQamChannelProfileEntry 5 }
+      
+        -- 1.3.6.1.4.1.2011.6.187.7
+        hwDocsQamDChannelBindTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamDChannelBindEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the EQAM channel binding table used for managing binding relationships between channel profiles and channel IDs.
+                 The index of this table is ifIndex.
+                "
+            ::= { hwEqamAn 7 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.7.1
+        hwDocsQamDChannelBindEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamDChannelBindEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the EQAM channel binding table used for managing binding relationships between channel profiles and channel IDs.
+                 The index of this entry is ifIndex.
+                "
+            INDEX   
+                { 
+                ifIndex
+                }
+            ::= { hwDocsQamDChannelBindTable  1 }
+        
+        HwDocsQamDChannelBindEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamDChannelBindProfileName
+                  OCTET STRING
+                }
+        
+        -- 1.3.6.1.4.1.2011.6.187.7.1.1   
+        hwDocsQamDChannelBindProfileName        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (0..15))
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+              "Indicates the channel profile name. hwDocsQamChannelProfileTable is a reference for setting parameters in the profile.
+              "
+            ::= { hwDocsQamDChannelBindEntry 1 }
+                
+        -- 1.3.6.1.4.1.2011.6.187.8
+        hwDocsQamVideoStreamTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamVideoStreamEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the dynamic video stream information table used for obtaining dynamic video stream information.
+                 The indexes of this table are ifIndex and hwDocsQamVideoStreamIndex.
+                "
+            ::= { hwEqamAn 8 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.8.1
+        hwDocsQamVideoStreamEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamVideoStreamEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the dynamic video stream information table used for obtaining dynamic video stream information.
+                 The indexes of this entry are ifIndex and hwDocsQamVideoStreamIndex.
+                "
+            INDEX
+                { 
+                ifIndex,
+                hwDocsQamVideoStreamIndex
+                }
+            ::= { hwDocsQamVideoStreamTable  1 }
+        
+        HwDocsQamVideoStreamEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamVideoStreamIndex
+                  Unsigned32,
+                hwDocsQamVideoStreamDestinationIpAddress
+                  InetAddress,
+                hwDocsQamVideoStreamDestinationIpAddressType
+                  InetAddressType,
+                hwDocsQamVideoStreamDestinationUdpPort
+                  InetPortNumber,
+                hwDocsQamVideoStreamType
+                  INTEGER,
+                hwDocsQamVideoStreamJitter
+                  Integer32,
+                hwDocsQamVideoStreamState
+                  INTEGER,
+                hwDocsQamVideoStreamInputStreamID
+                  Integer32,
+                hwDocsQamVideoStreamInputProgram
+                  Integer32,
+                hwDocsQamVideoStreamInputPMTPID
+                  Integer32,
+                hwDocsQamVideoStreamInputPCRPID
+                  Integer32,
+                hwDocsQamVideoStreamOutputStreamID
+                  Integer32,
+                hwDocsQamVideoStreamOutputProgram
+                  Integer32,
+                hwDocsQamVideoStreamOutputPMTPID
+                  Integer32,
+                hwDocsQamVideoStreamOutputPCRPID
+                  Integer32,
+                hwDocsQamVideoStreamInputESPIDList
+                  OCTET STRING,
+                hwDocsQamVideoStreamOutputESPIDList
+                  OCTET STRING,
+                hwDocsQamVideoStreamESTypeList
+                  OCTET STRING,
+                hwDocsQamVideoStreamChannelList
+                  ChannelList,
+                hwDocsQamVideoStreamTraffic
+                  Unsigned32,   
+                hwDocsQamVideoStreamSourceIpAddressType
+                  InetAddressType,
+                hwDocsQamVideoStreamSourceIpAddress
+                  InetAddress,
+                hwDocsQamVideoStreamDiscontinuityCounter
+                  Counter64
+                }
+        
+        -- 1.3.6.1.4.1.2011.6.187.8.1.1   
+        hwDocsQamVideoStreamIndex        OBJECT-TYPE
+            SYNTAX      Unsigned32 (1..65535)
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "Indicates the index of a dynamic video stream information table.
+                "
+            ::= { hwDocsQamVideoStreamEntry 1 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.2   
+        hwDocsQamVideoStreamDestinationIpAddress        OBJECT-TYPE
+            SYNTAX      InetAddress
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the destination IP address.
+                "
+            ::= { hwDocsQamVideoStreamEntry 2 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.3   
+        hwDocsQamVideoStreamDestinationIpAddressType        OBJECT-TYPE
+            SYNTAX      InetAddressType
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the destination IP address type.
+                "
+            ::= { hwDocsQamVideoStreamEntry 3 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.4   
+        hwDocsQamVideoStreamDestinationUdpPort        OBJECT-TYPE
+            SYNTAX      InetPortNumber
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the destination UDP port number. The default value is 0, indicating that the UDP port number is invalid.
+                 Range: 0-65535
+                "
+            ::= { hwDocsQamVideoStreamEntry 4 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.5   
+        hwDocsQamVideoStreamType        OBJECT-TYPE
+            SYNTAX      INTEGER
+                  {
+                  data(1),
+                  spts(2),
+                  mpts(3),
+                  plant(4)
+                  }
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the data flow type.
+                 Options: 
+                 1. data(1)   -indicates the data type
+                 2. spts(2)   -indicates the spts type
+                 3. mpts(3)   -indicates the mpts type
+                 4. plant(4)  -indicates the plant type
+                "
+            ::= { hwDocsQamVideoStreamEntry 5 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.6   
+        hwDocsQamVideoStreamJitter        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..250)
+            UNITS       "millisecond"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the network jitter allowed.
+                 If the current video stream is not supported, -1 is returned.
+                "
+            ::= { hwDocsQamVideoStreamEntry 6 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.7   
+        hwDocsQamVideoStreamState        OBJECT-TYPE
+            SYNTAX      INTEGER
+                  {
+                  offline(1),
+                  online(2),
+                  unknown(3)
+                  }
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the video stream status.
+                 Options: 
+                 1. offline(1)   -indicates the offline state
+                 2. online(2)    -indicates the online state
+                 3. unknown(3)   -indicates the unknown state
+                "
+            ::= { hwDocsQamVideoStreamEntry 7 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.8   
+        hwDocsQamVideoStreamInputStreamID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..65535)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the input transport stream ID, the value -1 indicates that the input transport stream ID is invalid.
+                "
+            ::= { hwDocsQamVideoStreamEntry 8 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.9   
+        hwDocsQamVideoStreamInputProgram        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..65535)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the input program ID, the value -1 indicates that the input program ID is invalid.
+                "
+            ::= { hwDocsQamVideoStreamEntry 9 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.10    
+        hwDocsQamVideoStreamInputPMTPID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..8191)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the input PMT PID, the value -1 indicates that the input PMT PID is invalid.
+                "
+            ::= { hwDocsQamVideoStreamEntry 10 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.11    
+        hwDocsQamVideoStreamInputPCRPID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..8191)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the input PCR PID, the value -1 indicates that the input PCR PID is invalid.
+                "
+            ::= { hwDocsQamVideoStreamEntry 11 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.12    
+        hwDocsQamVideoStreamOutputStreamID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..65535)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the output transport stream ID, the value -1 indicates that the output transport stream ID is invalid.
+                "
+            ::= { hwDocsQamVideoStreamEntry 12 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.13    
+        hwDocsQamVideoStreamOutputProgram        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..65535)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the program ID of the output stream, the value -1 indicates that the program ID of the output stream is invalid.
+                "
+            ::= { hwDocsQamVideoStreamEntry 13 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.8.1.14    
+        hwDocsQamVideoStreamOutputPMTPID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..8191)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the PMT PID of the output stream, the value -1 indicates that the PMT PID of the output stream is invalid.
+                "
+            ::= { hwDocsQamVideoStreamEntry 14 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.15    
+        hwDocsQamVideoStreamOutputPCRPID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..8191)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the PCR PID of the output stream, the value -1 indicates that the PCR PID of the output stream is invalid.
+                "
+            ::= { hwDocsQamVideoStreamEntry 15 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.16
+        hwDocsQamVideoStreamInputESPIDList        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (0..128))
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+              "Indicates the ESPID list for input streams. PID consists of two bytes and must be in one-to-one mapping with ESTypeList.
+              "
+            ::= { hwDocsQamVideoStreamEntry 16 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.17
+        hwDocsQamVideoStreamOutputESPIDList        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (0..128))
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+              "Indicates the ESPID list for output streams. PID consists of two bytes and must be in one-to-one mapping with ESTypeList.
+              "
+            ::= { hwDocsQamVideoStreamEntry 17 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.1.18
+        hwDocsQamVideoStreamESTypeList        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (0..64))
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+              "Indicate the ES type list. One byte indicates a type, which must be in one-to-one mapping with the ESPID list for input or output streams.
+              "
+            ::= { hwDocsQamVideoStreamEntry 18 }
+        
+        -- 1.3.6.1.4.1.2011.6.187.8.1.19
+        hwDocsQamVideoStreamChannelList        OBJECT-TYPE
+            SYNTAX       ChannelList
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+              "Indicates the output channel list.
+              "
+            ::= { hwDocsQamVideoStreamEntry 19 }
+
+        -- 1.3.6.1.4.1.2011.6.187.8.1.20
+        hwDocsQamVideoStreamTraffic        OBJECT-TYPE
+            SYNTAX       Unsigned32
+            UNITS        "kbps"
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+              "Indicates the video stream traffic.
+              "
+            ::= { hwDocsQamVideoStreamEntry 20 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.8.1.26
+        hwDocsQamVideoStreamSourceIpAddressType  OBJECT-TYPE
+            SYNTAX      InetAddressType
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the address type of the source IP address in video stream. Only IPv4 addresses are supported.
+                "
+            ::= { hwDocsQamVideoStreamEntry 26 }    
+            
+        -- 1.3.6.1.4.1.2011.6.187.8.1.27   
+        hwDocsQamVideoStreamSourceIpAddress        OBJECT-TYPE
+            SYNTAX       InetAddress
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Indicates the source IP address of the video stream.
+                "
+            ::= { hwDocsQamVideoStreamEntry 27 }               
+            
+        -- 1.3.6.1.4.1.2011.6.187.8.1.28
+        hwDocsQamVideoStreamDiscontinuityCounter        OBJECT-TYPE  
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the discontinuity counter of video stream.
+                 Default: 0
+                "
+            ::= { hwDocsQamVideoStreamEntry 28 }   
+   
+        -- 1.3.6.1.4.1.2011.6.187.9
+        hwDocsQamVideoInputStreamStatisticsTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamVideoInputStreamStatisticsEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the input statistics table for dynamic video streams.
+                 The indexes of this table are ifIndex and hwDocsQamVideoInputStreamStatisticsIndex.
+                "
+            ::= { hwEqamAn 9 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.9.1
+        hwDocsQamVideoInputStreamStatisticsEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamVideoInputStreamStatisticsEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the input statistics table for dynamic video streams.
+                 The indexes of this entry are ifIndex and hwDocsQamVideoInputStreamStatisticsIndex.
+                "
+            INDEX   
+                { 
+                ifIndex,
+                hwDocsQamVideoInputStreamStatisticsIndex
+                }
+            ::= { hwDocsQamVideoInputStreamStatisticsTable  1 }
+        
+        HwDocsQamVideoInputStreamStatisticsEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamVideoInputStreamStatisticsIndex
+                  Unsigned32,
+                hwDocsQamVideoInputStreamOperMode
+                  INTEGER,
+                hwDocsQamVideoInputStreamPackets
+                  Counter64,
+                hwDocsQamVideoInputStreamCountOfJitterOverflow
+                  Counter64,
+                hwDocsQamVideoInputStreamCountOfJitterUnderflow
+                  Counter64,
+                hwDocsQamVideoInputTSDiscontinuityCounter
+                  Counter64  
+                }
+        
+        -- 1.3.6.1.4.1.2011.6.187.9.1.1   
+        hwDocsQamVideoInputStreamStatisticsIndex        OBJECT-TYPE
+            SYNTAX      Unsigned32 (1..65535)
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "Indicates the index of input statistics table for dynamic video streams.
+                "
+            ::= { hwDocsQamVideoInputStreamStatisticsEntry 1 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.9.1.2   
+        hwDocsQamVideoInputStreamOperMode        OBJECT-TYPE
+            SYNTAX      INTEGER
+            {
+              clearStatistic(1),
+              invalid(-1)
+            }
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "Indicates the operation mode. The set operation can clear input statistics for dynamic video streams. 
+                 Options: 
+                 1. clearStatistic(1) -indicates clearing input statistics for dynamic video streams
+                 2. invalid(-1)       -indicates invalid
+                "
+            ::= { hwDocsQamVideoInputStreamStatisticsEntry 2 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.9.1.3   
+        hwDocsQamVideoInputStreamPackets        OBJECT-TYPE
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates packet statistics for input streams.
+                "
+            ::= { hwDocsQamVideoInputStreamStatisticsEntry 3 }
+
+        -- 1.3.6.1.4.1.2011.6.187.9.1.4   
+        hwDocsQamVideoInputStreamCountOfJitterOverflow        OBJECT-TYPE
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the jitter overflow statistics.
+                "
+            ::= { hwDocsQamVideoInputStreamStatisticsEntry 4 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.9.1.5   
+        hwDocsQamVideoInputStreamCountOfJitterUnderflow        OBJECT-TYPE
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the jitter underflow statistics.
+                "
+            ::= { hwDocsQamVideoInputStreamStatisticsEntry 5 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.9.1.6  
+        hwDocsQamVideoInputTSDiscontinuityCounter        OBJECT-TYPE
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the discontinuity counter of input streams.
+                "
+            ::= { hwDocsQamVideoInputStreamStatisticsEntry 6 }            
+      
+        -- 1.3.6.1.4.1.2011.6.187.10
+        hwDocsQamVideoOutputDChannelStatisticsTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamVideoOutputDChannelStatisticsEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the output channel statistics table for dynamic video streams.
+                 The index of this table is ifIndex.
+                "
+            ::= { hwEqamAn 10 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.10.1
+        hwDocsQamVideoOutputDChannelStatisticsEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamVideoOutputDChannelStatisticsEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the output channel statistics table for dynamic video streams.
+                 The index of this entry is ifIndex.
+                "
+            INDEX   
+                { 
+                ifIndex
+                }
+            ::= { hwDocsQamVideoOutputDChannelStatisticsTable  1 }
+        
+        HwDocsQamVideoOutputDChannelStatisticsEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamVideoOutputDChannelOperMode
+                  INTEGER,
+                hwDocsQamVideoOutputDChannelPackets
+                  Counter64,
+                hwDocsQamVideoOutputDChannelDiscardPackets
+                  Counter64,
+                hwDocsQamVideoOutputDChannelPATNumber
+                  Counter64,
+                hwDocsQamVideoOutputDChannelPMTNumber
+                  Counter64,
+                hwDocsQamVideoOutputDChannelCATNumber
+                  Counter64  
+                }
+        
+        -- 1.3.6.1.4.1.2011.6.187.10.1.1    
+        hwDocsQamVideoOutputDChannelOperMode        OBJECT-TYPE
+            SYNTAX      INTEGER
+            {
+              clearStatistic(1),
+              invalid(-1)
+            }
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "Indicates the operation mode. The set operation can clear output channel statistics for dynamic video streams. 
+                 Options: 
+                 1. clearStatistic(1) -indicates clearing output channel statistics for dynamic video streams
+                 2. invalid(-1)       -indicates invalid
+                "
+            ::= { hwDocsQamVideoOutputDChannelStatisticsEntry 1 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.10.1.2    
+        hwDocsQamVideoOutputDChannelPackets        OBJECT-TYPE
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the packet statistics for output channels.
+                "
+            ::= { hwDocsQamVideoOutputDChannelStatisticsEntry 2 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.10.1.3    
+        hwDocsQamVideoOutputDChannelDiscardPackets        OBJECT-TYPE
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the packet loss statistics for output channels.
+                "
+            ::= { hwDocsQamVideoOutputDChannelStatisticsEntry 3 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.10.1.4    
+        hwDocsQamVideoOutputDChannelPATNumber        OBJECT-TYPE
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the PAT statistics for output channels.
+                "
+            ::= { hwDocsQamVideoOutputDChannelStatisticsEntry 4 }
+       
+        -- 1.3.6.1.4.1.2011.6.187.10.1.5    
+        hwDocsQamVideoOutputDChannelPMTNumber        OBJECT-TYPE
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the PMT statistics for output channels.
+                "
+            ::= { hwDocsQamVideoOutputDChannelStatisticsEntry 5 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.10.1.6    
+        hwDocsQamVideoOutputDChannelCATNumber        OBJECT-TYPE
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the CAT statistics for output channels.
+                "
+            ::= { hwDocsQamVideoOutputDChannelStatisticsEntry 6 }
+
+-- 1.3.6.1.4.1.2011.6.187.11
+        hwDocsQamNGODEdgeDeviceTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamNGODEdgeDeviceEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the edge device table.
+                 The index of this table is hwDocsQamNGODEdgeDeviceName.
+                "
+            ::= { hwEqamAn 11 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.11.1
+        hwDocsQamNGODEdgeDeviceEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamNGODEdgeDeviceEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the edge device table.
+                 The index of this entry is hwDocsQamNGODEdgeDeviceName.
+                "
+            INDEX   
+                { 
+                hwDocsQamNGODEdgeDeviceName
+                }
+            ::= { hwDocsQamNGODEdgeDeviceTable  1 }
+        
+        HwDocsQamNGODEdgeDeviceEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamNGODEdgeDeviceName
+                  OCTET STRING,
+                hwDocsQamNGODEdgeDeviceStreamingZone
+                  OCTET STRING,
+                hwDocsQamNGODEdgeDevicePeerAddressType
+                  InetAddressType,
+                hwDocsQamNGODEdgeDevicePeerAddress
+                  InetAddress,
+                hwDocsQamNGODEdgeDevicePeerPort
+                  InetPortNumber,
+                hwDocsQamNGODEdgeDeviceLocalAddressType
+                  InetAddressType,
+                hwDocsQamNGODEdgeDeviceLocalAddress
+                  InetAddress,
+                hwDocsQamNGODEdgeDeviceVREPIDMode
+                  INTEGER,
+                hwDocsQamNGODEdgeDeviceVREPID
+                  Unsigned32,
+                hwDocsQamNGODEdgeDeviceHoldTime
+                  Unsigned32,
+                hwDocsQamNGODEdgeDeviceConnectRetry
+                  Unsigned32,
+                hwDocsQamNGODEdgeDeviceActive
+                  TruthValue,
+                hwDocsQamNGODEdgeDeviceState
+                  INTEGER,
+                hwDocsQamNGODEdgeDeviceNegotiatedHoldTime
+                  Unsigned32,
+                hwDocsQamNGODEdgeDeviceEstablishedPeerAddressType
+                  InetAddressType,
+                hwDocsQamNGODEdgeDeviceEstablishedPeerAddress
+                  InetAddress,
+                hwDocsQamNGODEdgeDeviceEstablishedPeerPort
+                  InetPortNumber,
+                hwDocsQamNGODEdgeDeviceEstablishedLocalAddressType
+                  InetAddressType,
+                hwDocsQamNGODEdgeDeviceEstablishedLocalAddress
+                  InetAddress,
+                hwDocsQamNGODEdgeDeviceEstablishedLocalPort
+                  InetPortNumber,
+                hwDocsQamNGODEdgeDeviceCost
+                  Unsigned32,
+                hwDocsQamNGODEdgeDevicelocalIfType
+                  INTEGER,
+                hwDocsQamNGODEdgeDevicelocalIfNumber  
+                  Integer32,
+                hwDocsQamNGODEdgeDeviceRowStatus
+                  RowStatus   
+                }
+        
+        -- 1.3.6.1.4.1.2011.6.187.11.1.1   
+        hwDocsQamNGODEdgeDeviceName        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (1..31))
+            MAX-ACCESS   not-accessible
+            STATUS       current
+            DESCRIPTION
+              " This attribute is the key that identifies the instance of the edge device.
+              Suggested format <RegionName>.<localname>.
+              "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceEntry 1}
+          
+        -- 1.3.6.1.4.1.2011.6.187.11.1.2 
+        hwDocsQamNGODEdgeDeviceStreamingZone        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (0..31))
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+              "This attribute identifies the streaming zone name which the edge device belongs to.
+              Suggested format <RegionName>.<localname>.
+              Null string means that the edge device does not belong to any streaming zone.
+              "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceEntry 2}
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.3 
+        hwDocsQamNGODEdgeDevicePeerAddressType  OBJECT-TYPE
+            SYNTAX      InetAddressType
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the IP address type of ERM peer which the edge device setting up VREP session with.
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEntry 3 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.4 
+        hwDocsQamNGODEdgeDevicePeerAddress  OBJECT-TYPE
+            SYNTAX      InetAddress
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the IP address of ERM peer which the edge device setting up VREP session with.
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEntry 4 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.5  
+        hwDocsQamNGODEdgeDevicePeerPort        OBJECT-TYPE
+            SYNTAX      InetPortNumber
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the TCP port number of ERM peer which the edge device setting up VREP session with.
+                The default port number is 6069.
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEntry 5 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.6 
+        hwDocsQamNGODEdgeDeviceLocalAddressType  OBJECT-TYPE
+            SYNTAX      InetAddressType
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the IP address type of the edge device to setup VREP session.
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEntry 6 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.7 
+        hwDocsQamNGODEdgeDeviceLocalAddress  OBJECT-TYPE
+            SYNTAX      InetAddress
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the IP address of the edge device to setup VREP session.
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEntry 7 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.8   
+        hwDocsQamNGODEdgeDeviceVREPIDMode        OBJECT-TYPE
+            SYNTAX      INTEGER
+                  {
+                  localip(1),
+                  integer(2)
+                  }
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the IP address type of the edge device to setup VREP session.. 
+                 The default value is localip(1).
+                 Options: 
+                 1. localip(1)   -indicates the localip mode. In this mode, edge device uses the hwDocsQamNGODEdgeDeviceLocalAddress
+                 as the VREPID in the VREP OPEN message.
+                 2. integer(2)   -indicates the integer mode. In this mode, edge device uses the manual configured VREPID 
+                 which can be configured through hwDocsQamNGODEdgeDeviceVREPID as the VREPID in the VREP OPEN message.
+                 
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEntry 8 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.9    
+        hwDocsQamNGODEdgeDeviceVREPID        OBJECT-TYPE
+            SYNTAX      Unsigned32 (0..4294967295)
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the VREPID value of the edge device.
+                The VREP Identifier MUST uniquely identify this speaker/listener within its Streaming Zone. A 
+                given node MAY set the value of its VREP Identifier to an IPv4 address assigned to that 
+                device. The value of the VREP Identifier is determined on startup and MUST be the 
+                same for all peer connections. When comparing two VREP identifiers, the VREP 
+                Identifier is to be interpreted as a numerical 4-octet unsigned integer.
+                It is recommended that NGOD components set the VREP identifier to their IPv4 address
+                when no identifier is configured in the Nx interface
+                When hwDocsQamNGODEdgeDeviceVREPIDMode is localip(1), this attribute can't be modified and the value is the same with hwDocsQamNGODEdgeDeviceLocalAddress. 
+                When hwDocsQamNGODEdgeDeviceVREPIDMode is integer(2), this atrribute can be configured to any integer as the VREPID.
+                The default value is 0.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceEntry 9 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.10   
+        hwDocsQamNGODEdgeDeviceHoldTime        OBJECT-TYPE
+            SYNTAX      Unsigned32 (0 | 3..3600)
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the number of seconds that the edge device proposes
+                 for the value of the Hold Timer. Upon receipt of an OPEN message, a VREP speaker or
+                 listener MUST calculate the value of the Hold Timer by using the smaller of its
+                 configured Hold Time and the Hold Time received in the OPEN message. The Hold
+                 Time MUST be either zero or at least three seconds. The calculated value indicates the maximum
+                 number of seconds that may elapse between the receipt of successive KEEPALIVE and/or UPDATE messages by the sender.
+                 If the Hold Timer is zero, then no procedures are necessary for keeping a peering session alive.
+                The default value is 240. 
+                Unit: s.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceEntry 10 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.11   
+        hwDocsQamNGODEdgeDeviceConnectRetry        OBJECT-TYPE
+            SYNTAX      Unsigned32 (60..3600)
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the expire time for the edge device to setup an TCP connection. 
+                The exact value of the ConnectRetry timer is a local matter, but should be sufficiently large to allow TCP initialization.
+                The default value is 120 second.
+                Unit: s.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceEntry 11 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.12 
+        hwDocsQamNGODEdgeDeviceActive        OBJECT-TYPE
+            SYNTAX       TruthValue
+            MAX-ACCESS   read-write
+            STATUS       current
+            DESCRIPTION
+                "This attribute identifies the state of the edge device. 
+                Set ture to active the edge device and false to deactive.
+                The default value is false.
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEntry 12 }   
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.13   
+        hwDocsQamNGODEdgeDeviceState        OBJECT-TYPE
+            SYNTAX      INTEGER
+                  {
+                  idle(1),
+                  connect(2),
+                  active(3),
+                  opensent(4),
+                  openconfirm(5),
+                  established(6)
+                  }
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the state of the edge device VREP FSM. 
+                 Options: 
+                 1. idle(1)        -Initially VREP is in the Idle state for each peer
+                 2. connect(2)     -In this state, an edge device is waiting for a transport protocol connection 
+                                    to be completed to the peer, and is listening for inbound transport connections from the peer
+                 3. active(3)      -In this state, an edge device is listening for an inbound connection from the peer, 
+                                    but is not in the process of initiating a connection to the peer
+                 4. opensent(4)    -In this state, an edge device has sent an OPEN message to its peer and is
+                                    waiting for an OPEN message from its peer
+                 5. openconfirm(5) -In this state, an edge device has sent an OPEN to its peer, received an OPEN
+                                    from its peer, and sent a KEEPALIVE in response to the OPEN
+                 6. established(6) -In the Established state, an LS can exchange UPDATE, NOTIFICATION, and KEEPALIVE messages with its peer
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceEntry 13 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.14   
+        hwDocsQamNGODEdgeDeviceNegotiatedHoldTime        OBJECT-TYPE
+            SYNTAX      Unsigned32 (0 | 3..3600)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the negotiated number of seconds that the edge device proposes
+                 for the value of the Hold Timer. See hwDocsQamNGODEdgeDeviceHoldTime decription.
+                The default value is 0.
+                Unit: s.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceEntry 14 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.15 
+        hwDocsQamNGODEdgeDeviceEstablishedPeerAddressType  OBJECT-TYPE
+            SYNTAX      InetAddressType
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the IP address type of ERM peer which the edge device established a VREP session with. 
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEntry 15 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.16 
+        hwDocsQamNGODEdgeDeviceEstablishedPeerAddress  OBJECT-TYPE
+            SYNTAX      InetAddress
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the IP address of ERM peer which the edge device established a VREP session with. 
+                When VREP session is not in established state, this value is 0.
+                The default value is 0.
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEntry 16 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.17  
+        hwDocsQamNGODEdgeDeviceEstablishedPeerPort        OBJECT-TYPE
+            SYNTAX      InetPortNumber
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the TCP port number of ERM peer which the edge device established a VREP session with.
+                When VREP session is not in established state, this value is 0.
+                The default value is 0.
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEntry 17 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.18 
+        hwDocsQamNGODEdgeDeviceEstablishedLocalAddressType  OBJECT-TYPE
+            SYNTAX      InetAddressType
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the IP address type of the edge device established a VREP session. 
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEntry 18 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.19 
+        hwDocsQamNGODEdgeDeviceEstablishedLocalAddress  OBJECT-TYPE
+            SYNTAX      InetAddress
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the IP address of the edge device established a VREP session.
+                 When VREP session is not in established state, this value is 0.
+                The default value is 0.
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEntry 19 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.20  
+        hwDocsQamNGODEdgeDeviceEstablishedLocalPort        OBJECT-TYPE
+            SYNTAX      InetPortNumber
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the TCP port number of the edge device established a VREP session.
+                When VREP session is not in established state, this value is 0.
+                The default value is 0.
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEntry 20 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.21   
+        hwDocsQamNGODEdgeDeviceCost        OBJECT-TYPE
+            SYNTAX      Unsigned32 (0..255)
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the cost of the edge devie. 
+                The cost attribute is a topology independent attribute. 
+                It represents the relative cost associated with the resources from a resource manager or of a data plane component.
+                The default value is 0.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceEntry 21 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.11.1.22   
+        hwDocsQamNGODEdgeDevicelocalIfType        OBJECT-TYPE
+            SYNTAX      INTEGER
+                  {
+                  inloopback(1),
+                  null(2),
+                  meth(3),
+                  vlanif(4),
+                  loopback(5),
+                  tunnel(6),
+                  notconfigured(255)
+                  }
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "Indicates the interface type.
+                 Options:
+                 1. inloopback(1) -the system inner loopback interface
+                 2. null(2)       -the NULL interface
+                 3. meth(3)       -the ethernet interface for management
+                 4. vlanif(4)     -the VLAN interface
+                 5. loopback(5)   -the loopback interface
+                 6. tunnel(6)     -the tunnel interface
+                 7. notconfigured(255) -not configiured
+                 The interface number (hwDocsQamNGODEdgeDevicelocalIfNumber)and interface type together identify an interface.
+                 The default value is notConfigured(255), it indicates that no interface is configured.
+                 It only supports vlanif(4) and loopback(5).
+                "                
+            ::= { hwDocsQamNGODEdgeDeviceEntry 22 }
+
+        -- 1.3.6.1.4.1.2011.6.187.11.1.23   
+        hwDocsQamNGODEdgeDevicelocalIfNumber        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..4093)
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "Indicates the interface number.
+                 Range: 0-4093
+                 Range for the inloopback interface: 0
+                 Range for the NULL interface: 0
+                 Range for the MEth interface: 0
+                 Range for the VLAN interface: 1-4093
+                 Range for the loopback interface: 0-31
+                 Range for the tunnel interface: 1-64                 
+                 The interface number and interface type (hwDocsQamNGODEdgeDevicelocalIfType) together identify an interface.
+                 The default value is -1, it indicates that no interface is configured.
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEntry 23 }  
+
+        -- 1.3.6.1.4.1.2011.6.187.11.1.255 
+        hwDocsQamNGODEdgeDeviceRowStatus        OBJECT-TYPE
+            SYNTAX       RowStatus
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Row status, used to query, create, modify, and delete a edge device. 
+                 It supports the active(1), createAndGo(4), and destroy(6) operations.
+                 During query, the value of this leaf is always active(1).
+                 During deletion, specify the value of this leaf to destroy(6).
+                 During creation, specify the value of this leaf to createAndGo(4).
+                 To modify the parameters of a edge device table, this leaf need not be issued together.
+                 Options:
+                 1. active(1)      -indicates the query operation
+                 2. createAndGo(4) -indicates the creating operation
+                 3. destroy(6)     -indicates the deleting operation
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEntry 255}
+            
+-- 1.3.6.1.4.1.2011.6.187.12
+        hwDocsQamNGODEdgeDeviceEdgeInputTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamNGODEdgeDeviceEdgeInputEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the edge device input table.
+                 The index of this table is hwDocsQamNGODEdgeDeviceName and hwDocsQamNGODEdgeDeviceEdgeInputIndex.
+                "
+            ::= { hwEqamAn 12 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.12.1
+        hwDocsQamNGODEdgeDeviceEdgeInputEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamNGODEdgeDeviceEdgeInputEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the edge device input table.
+                 The index of this entry is hwDocsQamNGODEdgeDeviceName and hwDocsQamNGODEdgeDeviceEdgeInputIndex.
+                "
+            INDEX 
+                { 
+                hwDocsQamNGODEdgeDeviceName,
+                hwDocsQamNGODEdgeDeviceEdgeInputIndex
+                }
+            ::= { hwDocsQamNGODEdgeDeviceEdgeInputTable  1 }
+        
+        HwDocsQamNGODEdgeDeviceEdgeInputEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamNGODEdgeDeviceEdgeInputIndex
+                  Unsigned32,
+                hwDocsQamNGODEdgeDeviceEdgeInputAddressType
+                  InetAddressType,
+                hwDocsQamNGODEdgeDeviceEdgeInputAddress
+                  InetAddress,
+                hwDocsQamNGODEdgeDeviceEdgeInputAddressMask
+                  InetAddress,
+                hwDocsQamNGODEdgeDeviceEdgeInputIfindex
+                  Unsigned32,
+                hwDocsQamNGODEdgeDeviceEdgeInputMaxBandwidth
+                  Unsigned32,
+                hwDocsQamNGODEdgeDeviceEdgeInputGroupName
+                  OCTET STRING,
+                hwDocsQamNGODEdgeDeviceEdgeInputRowStatus
+                  RowStatus   
+                }
+        
+        -- 1.3.6.1.4.1.2011.6.187.12.1.1   
+        hwDocsQamNGODEdgeDeviceEdgeInputIndex        OBJECT-TYPE
+            SYNTAX      Unsigned32 (1..4|4294967295)
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "Indicates the index of the edge device input table.
+                when set to 4294967295, the system automatically allocates an index for the instance.
+                "      
+            ::= { hwDocsQamNGODEdgeDeviceEdgeInputEntry 1 }
+             
+        -- 1.3.6.1.4.1.2011.6.187.12.1.2 
+        hwDocsQamNGODEdgeDeviceEdgeInputAddressType  OBJECT-TYPE
+            SYNTAX      InetAddressType
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the IP address type of the edge device input host adress.
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEdgeInputEntry 2 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.12.1.3
+        hwDocsQamNGODEdgeDeviceEdgeInputAddress  OBJECT-TYPE
+            SYNTAX      InetAddress
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the IP address of the edge device input host adress.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceEdgeInputEntry 3 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.12.1.4
+        hwDocsQamNGODEdgeDeviceEdgeInputAddressMask  OBJECT-TYPE
+            SYNTAX      InetAddress
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the IP address mask of the edge device input host adress.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceEdgeInputEntry 4 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.12.1.5
+        hwDocsQamNGODEdgeDeviceEdgeInputIfindex  OBJECT-TYPE
+            SYNTAX      Unsigned32 (0..4294967295)
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the input ifindex of the edge device input port.
+                The ifIndex is an ifType of docsCableMaclayer(127).
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceEdgeInputEntry 5 }
+
+        -- 1.3.6.1.4.1.2011.6.187.12.1.6   
+        hwDocsQamNGODEdgeDeviceEdgeInputMaxBandwidth        OBJECT-TYPE
+            SYNTAX      Unsigned32 (0..4294967295)
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the max bandwidth of the edge device input port.
+                 The default value is 0.
+                 Unit: kbps.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceEdgeInputEntry 6 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.12.1.7   
+        hwDocsQamNGODEdgeDeviceEdgeInputGroupName        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (0..31))
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+              "This attribute identifies the group name of the edge device input belongs to. 
+              The default value is null string.
+              "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceEdgeInputEntry 7}
+            
+        -- 1.3.6.1.4.1.2011.6.187.12.1.255 
+        hwDocsQamNGODEdgeDeviceEdgeInputRowStatus        OBJECT-TYPE
+            SYNTAX       RowStatus
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Row status, used to query, create, modify, and delete a edge device input. 
+                 It supports the active(1), createAndGo(4), and destroy(6) operations.
+                 During query, the value of this leaf is always active(1).
+                 During deletion, specify the value of this leaf to destroy(6).
+                 During creation, specify the value of this leaf to createAndGo(4).
+                 To modify the parameters of a device input table, this leaf need not be issued together.
+                 Options:
+                 1. active(1)      -indicates the query operation
+                 2. createAndGo(4) -indicates the creating operation
+                 3. destroy(6)     -indicates the deleting operation
+                "
+            ::= { hwDocsQamNGODEdgeDeviceEdgeInputEntry 255}
+            
+        -- 1.3.6.1.4.1.2011.6.187.13
+        hwDocsQamNGODEdgeDeviceStatisticsTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamNGODEdgeDeviceStatisticsEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the edge device statistics table.
+                 The index of this table is hwDocsQamNGODEdgeDeviceName.
+                "
+            ::= { hwEqamAn 13 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.13.1
+        hwDocsQamNGODEdgeDeviceStatisticsEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamNGODEdgeDeviceStatisticsEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the edge device statistics table.
+                 The index of this entry is hwDocsQamNGODEdgeDeviceName.
+                "
+            INDEX 
+                { 
+                hwDocsQamNGODEdgeDeviceName
+                }
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsTable  1 }
+        
+        HwDocsQamNGODEdgeDeviceStatisticsEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamNGODEdgeDeviceRecvOpenPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceSentOpenPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceRecvKeepalivePkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceSentKeepalivePkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceRecvNotificationPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceSentNotificationPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceSentUpdatePkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceRecvErrPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceRecvMsgHeaderErrPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceRecvMsgHeaderBadLengthErrPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceRecvMsgHeaderBadTypeErrPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceRecvOpenMsgErrPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceRecvOpenMsgUnsupportedVersionErrPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceRecvOpenMsgBadPeerAddressDomainErrPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceRecvOpenMsgBadVREPIDErrPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceRecvOpenMsgUnsupportedOptionParaErrPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceRecvOpenMsgUnacceptableHoldTimeErrPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceRecvOpenMsgUnsupportedCapabilityErrPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceRecvOpenMsgCapabilityMissmatchErrPkts
+                  Counter32,
+                hwDocsQamNGODEdgeDeviceStatisticsReset
+                  INTEGER, 
+                hwDocsQamNGODEdgeDeviceRecvNotificationErrPkts
+                  Counter32
+                }
+        
+        -- 1.3.6.1.4.1.2011.6.187.13.1.1   
+        hwDocsQamNGODEdgeDeviceRecvOpenPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of OPEN packets received.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 1 }   
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.2   
+        hwDocsQamNGODEdgeDeviceSentOpenPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of OPEN packets sent.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 2 } 
+        
+        -- 1.3.6.1.4.1.2011.6.187.13.1.3   
+        hwDocsQamNGODEdgeDeviceRecvKeepalivePkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of KEEPALIVE packets received .
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 3 }  
+        
+        -- 1.3.6.1.4.1.2011.6.187.13.1.4   
+        hwDocsQamNGODEdgeDeviceSentKeepalivePkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of KEEPALIVE packets sent.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 4 }   
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.5   
+        hwDocsQamNGODEdgeDeviceRecvNotificationPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of NOTIFICATION packets received .
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 5 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.6   
+        hwDocsQamNGODEdgeDeviceSentNotificationPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of NOTIFICATION packets sent.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 6 }     
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.7   
+        hwDocsQamNGODEdgeDeviceSentUpdatePkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of UPDATE packets sent.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 7 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.8   
+        hwDocsQamNGODEdgeDeviceRecvErrPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of ERROR packets received.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 8 }     
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.9   
+        hwDocsQamNGODEdgeDeviceRecvMsgHeaderErrPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of message header error packets received.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 9 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.10   
+        hwDocsQamNGODEdgeDeviceRecvMsgHeaderBadLengthErrPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of message header bad length packets received.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 10 } 
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.11   
+        hwDocsQamNGODEdgeDeviceRecvMsgHeaderBadTypeErrPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of message header bad type packets received.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 11 }     
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.12   
+        hwDocsQamNGODEdgeDeviceRecvOpenMsgErrPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of OPEN message error packets received.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 12 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.13   
+        hwDocsQamNGODEdgeDeviceRecvOpenMsgUnsupportedVersionErrPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of OPEN message unsupported versionError error packets received.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 13 }     
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.14   
+        hwDocsQamNGODEdgeDeviceRecvOpenMsgBadPeerAddressDomainErrPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of OPEN message bad peer address domain error packets received.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 14 }     
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.15   
+        hwDocsQamNGODEdgeDeviceRecvOpenMsgBadVREPIDErrPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of OPEN message VREPID error packets received.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 15 } 
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.16   
+        hwDocsQamNGODEdgeDeviceRecvOpenMsgUnsupportedOptionParaErrPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of OPEN message unsupported Option parameter error packets received.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 16 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.17   
+        hwDocsQamNGODEdgeDeviceRecvOpenMsgUnacceptableHoldTimeErrPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of OPEN message unacceptable hold time error packets received.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 17 } 
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.18   
+        hwDocsQamNGODEdgeDeviceRecvOpenMsgUnsupportedCapabilityErrPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of OPEN message unsupported capability error packets received.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 18 } 
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.19   
+        hwDocsQamNGODEdgeDeviceRecvOpenMsgCapabilityMissmatchErrPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of OPEN message capability missmatch error packets received.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 19 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.20   
+        hwDocsQamNGODEdgeDeviceStatisticsReset   OBJECT-TYPE
+            SYNTAX   INTEGER{
+                              clear(1)
+                            }
+            MAX-ACCESS   read-write
+            STATUS       current
+            DESCRIPTION
+                "Rest the statistics of edge device.
+                 Options:
+                 1. clear(1)   -indicates resetingthe statistics of edge device
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 20 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.13.1.21   
+        hwDocsQamNGODEdgeDeviceRecvNotificationErrPkts    OBJECT-TYPE   
+            SYNTAX   Counter32 
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+                "Indicates the number of NOTIFICATION error packets received.
+                "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamNGODEdgeDeviceStatisticsEntry 21 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.14
+        hwDocsQamChannelTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamChannelEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the qam channel table.
+                 The index of this table is ifindex.
+                "           
+            ::= { hwEqamAn 14 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.14.1
+        hwDocsQamChannelEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamChannelEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the qam channel table.
+                 The index of this entry is ifindex.
+                "
+            INDEX 
+                { 
+                ifIndex
+                }
+            ::= { hwDocsQamChannelTable  1 }
+        
+        HwDocsQamChannelEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamChannelStreamID
+                  Unsigned32,
+                hwDocsQamChannelServiceGroupName
+                  OCTET STRING,
+                hwDocsQamChannelEdgeDeviceName
+                  OCTET STRING
+                }
+        
+        -- 1.3.6.1.4.1.2011.6.187.14.1.1   
+        hwDocsQamChannelStreamID        OBJECT-TYPE
+            SYNTAX      Unsigned32 (0..65535 | 4294967295)
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "This attribute identifies the TSID of the EQAM channel.
+                The default value is 4294967295.
+                "
+            ::= { hwDocsQamChannelEntry 1 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.14.1.2   
+        hwDocsQamChannelServiceGroupName        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (0..31))
+            MAX-ACCESS   read-write
+            STATUS       current
+            DESCRIPTION
+              "This attribute identifies the service group of the EQAM channel belongs to.
+              Suggested format <RegionName>.<localname>. 
+              The default value is null string.
+              "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamChannelEntry 2}
+            
+        -- 1.3.6.1.4.1.2011.6.187.14.1.3   
+        hwDocsQamChannelEdgeDeviceName        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (0..31))
+            MAX-ACCESS   read-write
+            STATUS       current
+            DESCRIPTION
+              "This attribute identifies the egdge device of the EQAM channel belongs to. 
+              The default value is null string.
+              "
+            REFERENCE "Comcast-SP-NGOD-GEN-SDR-I03-100731"
+            ::= { hwDocsQamChannelEntry 3}
+            
+        -- 1.3.6.1.4.1.2011.6.187.15
+        hwDocsQamVideoStreamMPTSProgramTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamVideoStreamMPTSProgramEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the dynamic program information table for mpts video stream.
+                 The indexes of this table are ifIndex, hwDocsQamVideoStreamIndex and hwDocsQamVideoStreamMultiProgramIndex.
+                "
+            ::= { hwEqamAn 15 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.15.1
+        hwDocsQamVideoStreamMPTSProgramEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamVideoStreamMPTSProgramEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the dynamic program information table for mpts video stream.
+                 The indexes of this entry are ifIndex, hwDocsQamVideoStreamIndex and hwDocsQamVideoStreamMultiProgramIndex.
+                "
+            INDEX
+                { 
+                ifIndex,
+                hwDocsQamVideoStreamIndex,
+                hwDocsQamVideoStreamMPTSProgramIndex
+                }
+            ::= { hwDocsQamVideoStreamMPTSProgramTable  1 }
+        
+        HwDocsQamVideoStreamMPTSProgramEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamVideoStreamMPTSProgramIndex
+                  Unsigned32,
+                hwDocsQamVideoStreamMPTSInputProgram
+                  Integer32,
+                hwDocsQamVideoStreamMPTSInputPMTPID
+                  Integer32,
+                hwDocsQamVideoStreamMPTSInputPCRPID
+                  Integer32,
+                hwDocsQamVideoStreamMPTSOutputProgram
+                  Integer32,
+                hwDocsQamVideoStreamMPTSOutputPMTPID
+                  Integer32,
+                hwDocsQamVideoStreamMPTSOutputPCRPID
+                  Integer32,
+                hwDocsQamVideoStreamMPTSInputESPIDList
+                  OCTET STRING,
+                hwDocsQamVideoStreamMPTSOutputESPIDList
+                  OCTET STRING,
+                hwDocsQamVideoStreamMPTSESTypeList
+                  OCTET STRING
+                }
+        
+        -- 1.3.6.1.4.1.2011.6.187.8.15.1   
+        hwDocsQamVideoStreamMPTSProgramIndex        OBJECT-TYPE
+            SYNTAX      Unsigned32 (1..65535)
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "Indicates the program index of a MPTS video stream.
+                "
+            ::= { hwDocsQamVideoStreamMPTSProgramEntry 1 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.15.2   
+        hwDocsQamVideoStreamMPTSInputProgram        OBJECT-TYPE
+            SYNTAX      Integer32 (-1 | 0..65535)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the input program ID, the value -1 indicates that the input program ID is invalid.
+                "
+            ::= { hwDocsQamVideoStreamMPTSProgramEntry 2 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.15.3   
+        hwDocsQamVideoStreamMPTSInputPMTPID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1 | 0..8191)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the input PMT PID, the value -1 indicates that the input PMT PID is invalid.
+                "
+            ::= { hwDocsQamVideoStreamMPTSProgramEntry 3 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.15.4   
+        hwDocsQamVideoStreamMPTSInputPCRPID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1 | 0..8191)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the input PCR PID, the value -1 indicates that the input PCR PID is invalid.
+                "
+            ::= { hwDocsQamVideoStreamMPTSProgramEntry 4 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.15.5   
+        hwDocsQamVideoStreamMPTSOutputProgram        OBJECT-TYPE
+            SYNTAX      Integer32 (-1 | 0..65535)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the program ID of the output stream, the value -1 indicates that the program ID of the output stream is invalid.
+                "
+            ::= { hwDocsQamVideoStreamMPTSProgramEntry 5 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.15.6   
+        hwDocsQamVideoStreamMPTSOutputPMTPID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1 | 0..8191)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the PMT PID of the output stream, the value -1 indicates that the PMT PID of the output stream is invalid.
+                "
+            ::= { hwDocsQamVideoStreamMPTSProgramEntry 6 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.15.7   
+        hwDocsQamVideoStreamMPTSOutputPCRPID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1 | 0..8191)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the PCR PID of the output stream, the value -1 indicates that the PCR PID of the output stream is invalid.
+                "
+            ::= { hwDocsQamVideoStreamMPTSProgramEntry 7 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.15.8   
+        hwDocsQamVideoStreamMPTSInputESPIDList        OBJECT-TYPE
+            SYNTAX      OCTET STRING (SIZE (0..128))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the ESPID list for input MPTS streams. PID consists of two bytes and must be in one-to-one mapping with ESTypeList.
+                "
+            ::= { hwDocsQamVideoStreamMPTSProgramEntry 8 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.15.9   
+        hwDocsQamVideoStreamMPTSOutputESPIDList        OBJECT-TYPE
+            SYNTAX      OCTET STRING (SIZE (0..128))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the ESPID list for output MPTS streams. PID consists of two bytes and must be in one-to-one mapping with ESTypeList.
+                "
+            ::= { hwDocsQamVideoStreamMPTSProgramEntry 9 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.8.15.10   
+        hwDocsQamVideoStreamMPTSESTypeList        OBJECT-TYPE
+            SYNTAX      OCTET STRING (SIZE (0..64))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicate the ES type list. One byte indicates a type, which must be in one-to-one mapping with the ESPID list for input or output streams.
+                "
+            ::= { hwDocsQamVideoStreamMPTSProgramEntry 10 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.16
+        hwDocsQamInputTSTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamInputTSEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the input TS table.
+                 The index of this table is hwDocsQamInputTSIndex.
+                "
+            ::= { hwEqamAn 16 }   
+            
+        -- 1.3.6.1.4.1.2011.6.187.16.1
+        hwDocsQamInputTSEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamInputTSEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the input TS table.
+                 The index of this entry is hwDocsQamInputTSIndex.
+                "
+            INDEX
+                { 
+                hwDocsQamInputTSIndex
+                }
+            ::= { hwDocsQamInputTSTable  1 }  
+            
+        HwDocsQamInputTSEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamInputTSIndex
+                  Unsigned32,
+                hwDocsQamInputTSIpAddressType
+                  InetAddressType,
+                hwDocsQamInputTSMulticastIpAddress
+                  InetAddress,
+                hwDocsQamInputTSSourceIpAddress
+                  InetAddress,
+                hwDocsQamInputTSSecondaryMulticastIpAddress
+                  InetAddress,
+                hwDocsQamInputTSSecondarySourceIpAddress
+                  InetAddress,
+                hwDocsQamInputTSState
+                  INTEGER,
+                hwDocsQamInputTSTraffic
+                  Unsigned32,
+                hwDocsQamInputTSDiscontinuityCounter
+                  Counter64,                  
+                hwDocsQamInputTSRowStatus
+                  RowStatus
+                }          
+                
+        -- 1.3.6.1.4.1.2011.6.187.16.1.1   
+        hwDocsQamInputTSIndex        OBJECT-TYPE
+            SYNTAX      Unsigned32 (1..65535|4294967295)
+            MAX-ACCESS  accessible-for-notify
+            STATUS      current
+            DESCRIPTION
+                "Indicates the index of a input TS.
+                 You can also fill 4294967295 and the system will automatically allocate an index.
+                "
+            ::= { hwDocsQamInputTSEntry 1 }     
+            
+        -- 1.3.6.1.4.1.2011.6.187.16.1.2
+        hwDocsQamInputTSIpAddressType  OBJECT-TYPE
+            SYNTAX      InetAddressType
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the address type of the multicast IP address in input TS. Only IPv4 addresses are supported.
+                "
+            ::= { hwDocsQamInputTSEntry 2 }    
+            
+        -- 1.3.6.1.4.1.2011.6.187.16.1.3   
+        hwDocsQamInputTSMulticastIpAddress        OBJECT-TYPE
+            SYNTAX       InetAddress
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Indicates the multicast IP address of the input TS.
+                "
+            ::= { hwDocsQamInputTSEntry 3 }     
+            
+        -- 1.3.6.1.4.1.2011.6.187.16.1.4   
+        hwDocsQamInputTSSourceIpAddress        OBJECT-TYPE
+            SYNTAX       InetAddress
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Indicates the source IP address of the input TS.
+                "
+            ::= { hwDocsQamInputTSEntry 4 }       
+            
+        -- 1.3.6.1.4.1.2011.6.187.16.1.5   
+        hwDocsQamInputTSSecondaryMulticastIpAddress        OBJECT-TYPE
+            SYNTAX       InetAddress
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Indicates the secondary multicast IP address of the input TS.
+                "
+            ::= { hwDocsQamInputTSEntry 5 }     
+            
+        -- 1.3.6.1.4.1.2011.6.187.16.1.6   
+        hwDocsQamInputTSSecondarySourceIpAddress        OBJECT-TYPE
+            SYNTAX       InetAddress
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Indicates the secondary source IP address of the input TS.
+                "
+            ::= { hwDocsQamInputTSEntry 6 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.16.1.7   
+        hwDocsQamInputTSState        OBJECT-TYPE
+            SYNTAX      INTEGER
+                  {
+                  offline(1),
+                  online(2),
+                  unknown(3)
+                  }
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the state of input TS.
+                 Options: 
+                 1. offline(1)   -indicates the offline state
+                 2. online(2)    -indicates the online state
+                 3. unknown(3)   -indicates the unknown state
+                "
+            ::= { hwDocsQamInputTSEntry 7 }    
+            
+        -- 1.3.6.1.4.1.2011.6.187.16.1.8
+        hwDocsQamInputTSTraffic  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "kbps"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the traffic of input TS.
+                 Default: 0
+                "
+            ::= { hwDocsQamInputTSEntry 8 } 
+            
+        -- 1.3.6.1.4.1.2011.6.187.16.1.9 
+        hwDocsQamInputTSDiscontinuityCounter  OBJECT-TYPE  
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the discontinuity counter of input TS.
+                 Default: 0
+                "
+            ::= { hwDocsQamInputTSEntry 9 }                
+            
+        -- 1.3.6.1.4.1.2011.6.187.16.1.255 
+        hwDocsQamInputTSRowStatus        OBJECT-TYPE
+            SYNTAX       RowStatus
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Row status, used to query, create, modify, and delete a input TS table. 
+                 It supports the active(1), createAndGo(4), and destroy(6) operations.
+                 During query, the value of this leaf is always active(1).
+                 During deletion, specify the value of this leaf to destroy(6).
+                 During creation, specify the value of this leaf to createAndGo(4).
+                 To modify the parameters of a channel profile table, this leaf need not be issued together.
+                 Options:
+                 1. active(1)      -indicates the query operation
+                 2. createAndGo(4) -indicates the creating operation
+                 3. destroy(6)     -indicates the deleting operation
+                "
+            ::= { hwDocsQamInputTSEntry 255 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.17
+        hwDocsQamDVBDomainTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamDVBDomainEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the DVB video domain table used to manage information, such as EQAM's profile name.
+                 The index of this table is hwDocsQamDVBDomainName.
+                "
+            ::= { hwEqamAn 17 }
+        
+        -- 1.3.6.1.4.1.2011.6.187.17.1
+        hwDocsQamDVBDomainEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamDVBDomainEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the DVB video domain table used to manage information, such as EQAM's profile name.
+                 The index of this entry is hwDocsQamDVBDomainName.
+                "
+            INDEX   
+                { 
+                hwDocsQamDVBDomainName
+                }
+            ::= { hwDocsQamDVBDomainTable  1 }
+            
+        HwDocsQamDVBDomainEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamDVBDomainName
+                  OCTET STRING,
+                hwDocsQamDVBDomainBindVideoProfile
+                  OCTET STRING,
+                hwDocsQamDVBDomainRowStatus
+                  RowStatus                 
+                }
+            
+        -- 1.3.6.1.4.1.2011.6.187.17.1.1 
+        hwDocsQamDVBDomainName        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (1..15))
+            MAX-ACCESS   not-accessible
+            STATUS       current
+            DESCRIPTION
+                "Indicates the DVB video domain name.
+                "
+            ::= { hwDocsQamDVBDomainEntry 1 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.17.1.2  
+        hwDocsQamDVBDomainBindVideoProfile        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (0..15))
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Indicates the bind video profile name.
+                "
+            ::= { hwDocsQamDVBDomainEntry 2 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.17.1.3
+        hwDocsQamDVBDomainRowStatus        OBJECT-TYPE
+            SYNTAX       RowStatus
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Row status, used to query, create, and delete a DVB domain table. 
+                 It supports the active(1), createAndGo(4), and destroy(6) operations.
+                 During query, the value of this leaf is always active(1).
+                 During deletion, specify the value of this leaf to destroy(6).
+                 During creation, specify the value of this leaf to createAndGo(4).
+                 Options:
+                 1. active(1)      -indicates the query operation
+                 2. createAndGo(4) -indicates the creating operation
+                 3. destroy(6)     -indicates the deleting operation
+                "
+            ::= { hwDocsQamDVBDomainEntry 3 }
+            
+        -- 1.3.6.1.4.1.2011.6.187.18
+        hwDocsQamVODPortConfigTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamVODPortConfigEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the VOD domain port table used to manage relationships between VOD domains and ports.
+                 The index of this table is ifIndex.
+                "
+            ::= { hwEqamAn 18 }
+        
+        -- 1.3.6.1.4.1.2011.6.187.18.1
+        hwDocsQamVODPortConfigEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamVODPortConfigEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the  VOD domain port table used to manage relationships between VOD domains and ports.
+                 The index of this entry is ifIndex.
+                "
+            INDEX   
+                { 
+                ifIndex
+                }
+            ::= { hwDocsQamVODPortConfigTable  1 }
+            
+        HwDocsQamVODPortConfigEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamVODPortConfigDomainName
+                  OCTET STRING,
+                hwDocsQamVODPortConfigStartUDPPort
+                  InetPortNumber,
+                hwDocsQamVODPortConfigRowStatus
+                  RowStatus                 
+                }
+                
+        -- 1.3.6.1.4.1.2011.6.187.18.1.1 
+        hwDocsQamVODPortConfigDomainName        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (1..15))
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Indicates the VOD domain name.
+                "
+            ::= { hwDocsQamVODPortConfigEntry 1 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.18.1.2
+        hwDocsQamVODPortConfigStartUDPPort   OBJECT-TYPE
+            SYNTAX       InetPortNumber
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Indicates the start udp value of port.
+                "
+            ::= { hwDocsQamVODPortConfigEntry 2 }
+
+        -- 1.3.6.1.4.1.2011.6.187.18.1.3
+        hwDocsQamVODPortConfigRowStatus OBJECT-TYPE
+            SYNTAX       RowStatus
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Row status, used to query, create, modify, and delete a port table. 
+                 It supports the active(1), createAndGo(4), and destroy(6) operations.
+                 During query, the value of this leaf is always active(1).
+                 During deletion, specify the value of this leaf to destroy(6).
+                 During creation, specify the value of this leaf to createAndGo(4).
+                 To modify the parameters of a channel profile table, this leaf need not be issued together.
+                 Options:
+                 1. active(1)      -indicates the query operation
+                 2. createAndGo(4) -indicates the creating operation
+                 3. destroy(6)     -indicates the deleting operation
+                "
+            ::= { hwDocsQamVODPortConfigEntry 3} 
+            
+        -- 1.3.6.1.4.1.2011.6.187.19
+        hwDocsQamDVBPortConfigTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamDVBPortConfigEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the DVB domain port table used to manage relationships between DVB domains and ports.
+                 The index of this table is ifIndex.
+                "
+            ::= { hwEqamAn 19 }
+        
+        -- 1.3.6.1.4.1.2011.6.187.19.1
+        hwDocsQamDVBPortConfigEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamDVBPortConfigEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the  DVB domain port table used to manage relationships between DVB domains and ports.
+                 The index of this entry is ifIndex.
+                "
+            INDEX   
+                { 
+                ifIndex
+                }
+            ::= { hwDocsQamDVBPortConfigTable  1 }
+            
+        HwDocsQamDVBPortConfigEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamDVBPortConfigDomainName
+                  OCTET STRING,
+                hwDocsQamDVBPortConfigRowStatus
+                  RowStatus                 
+                }
+                
+        -- 1.3.6.1.4.1.2011.6.187.19.1.1       
+        hwDocsQamDVBPortConfigDomainName OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (1..15))
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Indicates the DVB domain name.
+                "
+            ::= { hwDocsQamDVBPortConfigEntry 1 }
+
+        -- 1.3.6.1.4.1.2011.6.187.19.1.2
+        hwDocsQamDVBPortConfigRowStatus OBJECT-TYPE
+            SYNTAX       RowStatus
+            MAX-ACCESS   read-create
+            STATUS       current
+            DESCRIPTION
+                "Row status, used to query, create, modify, and delete a port table. 
+                 It supports the active(1), createAndGo(4), and destroy(6) operations.
+                 During query, the value of this leaf is always active(1).
+                 During deletion, specify the value of this leaf to destroy(6).
+                 During creation, specify the value of this leaf to createAndGo(4).
+                 To modify the parameters of a channel profile table, this leaf need not be issued together.
+                 Options:
+                 1. active(1)      -indicates the query operation
+                 2. createAndGo(4) -indicates the creating operation
+                 3. destroy(6)     -indicates the deleting operation
+                "
+            ::= { hwDocsQamDVBPortConfigEntry 2}    
+            
+        -- 1.3.6.1.4.1.2011.6.187.20
+        hwDocsQamInputTSStateTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamInputTSStateEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the EQAM TS state.
+                 The index of this table is hwDocsQamInputTSIndex.
+                "
+            ::= { hwEqamAn 20 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.20.1
+        hwDocsQamInputTSStateEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamInputTSStateEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the EQAM TS state.
+                 The index of this entry is hwDocsQamInputTSIndex.
+                "
+            INDEX   
+                { 
+                hwDocsQamInputTSIndex
+                }
+            ::= { hwDocsQamInputTSStateTable  1 }
+        
+        HwDocsQamInputTSStateEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamInputTSStateSwitchOver
+                  INTEGER,
+                hwDocsQamInputTSStateActive
+                  INTEGER
+                }
+        
+        -- 1.3.6.1.4.1.2011.6.187.20.1
+        hwDocsQamInputTSStateSwitchOver        OBJECT-TYPE
+            SYNTAX      INTEGER
+                  {
+                  switchover(1),
+                  none(255)
+                  }
+            MAX-ACCESS  read-create
+            STATUS      current
+            DESCRIPTION
+                "Indicates the opeartion for swiching over, the default value is none(255).
+                 Options: 
+                 1. switchover(1)   -switch over the input TS.
+                 2. none(255)       -no operation.
+                "
+            ::= { hwDocsQamInputTSStateEntry 1 }
+      
+        -- 1.3.6.1.4.1.2011.6.187.20.2
+        hwDocsQamInputTSStateActive        OBJECT-TYPE
+            SYNTAX      INTEGER
+                  {
+                  primary(1),
+                  secondary(2),
+                  none(255)
+                  }
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the active state of input TS.
+                 Options: 
+                 1. primary(1)           -indicates the active state of the input TS is primary.
+                 2. secondary(2)         -indicates the active state of the input TS is secondary.
+                 3. none(255)            -indicates it is not a redundancy input TS.
+                "
+            ::= { hwDocsQamInputTSStateEntry 2 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.21
+        hwDocsQamInputTSProgramTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamInputTSProgramEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the program information of input TS.
+                 The indexes of this table are hwDocsQamInputTSIndex and hwDocsQamInputTSProgramIndex.
+                "
+            ::= { hwEqamAn 21 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.21.1
+        hwDocsQamInputTSProgramEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamInputTSProgramEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the program information of input TS.
+                 The indexes of this entry are hwDocsQamInputTSIndex and hwDocsQamInputTSProgramIndex.
+                "
+            INDEX
+                { 
+                hwDocsQamInputTSIndex,
+                hwDocsQamInputTSProgramIndex
+                }
+            ::= { hwDocsQamInputTSProgramTable  1 }  
+            
+        HwDocsQamInputTSProgramEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamInputTSProgramIndex
+                  Unsigned32,    
+                hwDocsQamInputTSProgramID
+                  Integer32,
+                hwDocsQamInputTSProgramPMTPID
+                  Integer32,
+                hwDocsQamInputTSProgramPCRPID
+                  Integer32,
+                hwDocsQamInputTSProgramESPIDList
+                  OCTET STRING,
+                hwDocsQamInputTSProgramESTypeList
+                  OCTET STRING,
+                hwDocsQamInputTSProgramDiscontinuityCounter
+                  Counter64
+                } 
+                
+        -- 1.3.6.1.4.1.2011.6.187.21.1.1  
+        hwDocsQamInputTSProgramIndex        OBJECT-TYPE
+            SYNTAX      Unsigned32 (1..65535)
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "Indicates the index of a program in input TS.
+                "
+            ::= { hwDocsQamInputTSProgramEntry 1 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.21.1.2  
+        hwDocsQamInputTSProgramID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..65535)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the program ID , the value -1 indicates that the program ID is invalid.
+                "
+            ::= { hwDocsQamInputTSProgramEntry 2 }    
+            
+        -- 1.3.6.1.4.1.2011.6.187.21.1.3    
+        hwDocsQamInputTSProgramPMTPID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..8191)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the PMT PID, the value -1 indicates that the PMT PID is invalid.
+                "
+            ::= { hwDocsQamInputTSProgramEntry 3 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.21.1.4   
+        hwDocsQamInputTSProgramPCRPID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..8191)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the PCR PID, the value -1 indicates that the PCR PID is invalid.
+                "
+            ::= { hwDocsQamInputTSProgramEntry 4 }      
+            
+        -- 1.3.6.1.4.1.2011.6.187.21.1.5
+        hwDocsQamInputTSProgramESPIDList        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (0..128))
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+              "Indicates the ESPID list. PID consists of two bytes and must be in one-to-one mapping with ESTypeList.
+              "
+            ::= { hwDocsQamInputTSProgramEntry 5 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.21.1.6
+        hwDocsQamInputTSProgramESTypeList        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (0..64))
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+              "Indicate the ES type list. One byte indicates a type, which must be in one-to-one mapping with the ESPID list for program.
+              "
+            ::= { hwDocsQamInputTSProgramEntry 6 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.21.1.7
+        hwDocsQamInputTSProgramDiscontinuityCounter        OBJECT-TYPE  
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the discontinuity counter of program.
+                 Default: 0
+                "
+            ::= { hwDocsQamInputTSProgramEntry 7 }          
+            
+        -- 1.3.6.1.4.1.2011.6.187.22
+        hwDocsQamOutputTSProgramTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamOutputTSProgramEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the program information of output TS.
+                 The indexes of this table are ifIndex and hwDocsQamOutputTSProgramIndex.
+                "
+            ::= { hwEqamAn 22 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.22.1
+        hwDocsQamOutputTSProgramEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamOutputTSProgramEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the program information of output TS.
+                 The indexes of this entry are ifIndex and hwDocsQamOutputTSProgramIndex.
+                "
+            INDEX
+                { 
+                ifIndex,
+                hwDocsQamOutputTSProgramIndex
+                }
+            ::= { hwDocsQamOutputTSProgramTable  1 }  
+            
+        HwDocsQamOutputTSProgramEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamOutputTSProgramIndex
+                  Unsigned32,    
+                hwDocsQamOutputTSProgramID
+                  Integer32,
+                hwDocsQamOutputTSProgramPMTPID
+                  Integer32,
+                hwDocsQamOutputTSProgramPCRPID
+                  Integer32,
+                hwDocsQamOutputTSProgramESPIDList
+                  OCTET STRING,
+                hwDocsQamOutputTSProgramESTypeList
+                  OCTET STRING                
+                } 
+                
+        -- 1.3.6.1.4.1.2011.6.187.22.1.1  
+        hwDocsQamOutputTSProgramIndex        OBJECT-TYPE
+            SYNTAX      Unsigned32 (1..65535)
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "Indicates the index of a program in output TS.
+                "
+            ::= { hwDocsQamOutputTSProgramEntry 1 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.22.1.2  
+        hwDocsQamOutputTSProgramID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..65535)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the program ID , the value -1 indicates that the program ID is invalid.
+                "
+            ::= { hwDocsQamOutputTSProgramEntry 2 }    
+            
+        -- 1.3.6.1.4.1.2011.6.187.22.1.3    
+        hwDocsQamOutputTSProgramPMTPID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..8191)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the PMT PID, the value -1 indicates that the PMT PID is invalid.
+                "
+            ::= { hwDocsQamOutputTSProgramEntry 3 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.22.1.4   
+        hwDocsQamOutputTSProgramPCRPID        OBJECT-TYPE
+            SYNTAX      Integer32 (-1|0..8191)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the PCR PID, the value -1 indicates that the PCR PID is invalid.
+                "
+            ::= { hwDocsQamOutputTSProgramEntry 4 }      
+            
+        -- 1.3.6.1.4.1.2011.6.187.22.1.5
+        hwDocsQamOutputTSProgramESPIDList        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (0..128))
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+              "Indicates the ESPID list. PID consists of two bytes and must be in one-to-one mapping with ESTypeList.
+              "
+            ::= { hwDocsQamOutputTSProgramEntry 5 }  
+            
+        -- 1.3.6.1.4.1.2011.6.187.22.1.6
+        hwDocsQamOutputTSProgramESTypeList        OBJECT-TYPE
+            SYNTAX       OCTET STRING (SIZE (0..64))
+            MAX-ACCESS   read-only
+            STATUS       current
+            DESCRIPTION
+              "Indicate the ES type list. One byte indicates a type, which must be in one-to-one mapping with the ESPID list for program.
+              "
+            ::= { hwDocsQamOutputTSProgramEntry 6 }       
+            
+                                                                                                                                                       
+        -- 1.3.6.1.4.1.2011.6.187.23 
+        hwDocsQamDVBInputTSStatisticsTable    OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwDocsQamDVBInputTSStatisticsEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the statistics table for input TS.
+                 The indexes of this table are ifIndex and hwDocsQamDVBInputTSStatisticsIndex.
+                "
+            ::= { hwEqamAn 23 }
+    
+        -- 1.3.6.1.4.1.2011.6.187.23.1
+        hwDocsQamDVBInputTSStatisticsEntry    OBJECT-TYPE
+            SYNTAX          HwDocsQamDVBInputTSStatisticsEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "Indicates the statistics table for input TS.
+                 The indexes of this entry are ifIndex and hwDocsQamDVBInputTSStatisticsIndex.
+                "
+            INDEX   
+                { 
+                ifIndex,
+                hwDocsQamDVBInputTSStatisticsIndex
+                }
+            ::= { hwDocsQamDVBInputTSStatisticsTable  1 }
+        
+        HwDocsQamDVBInputTSStatisticsEntry ::=
+            SEQUENCE 
+                { 
+                hwDocsQamDVBInputTSStatisticsIndex
+                  Unsigned32,
+                hwDocsQamDVBInputTSStatisticsOperMode
+                  INTEGER,
+                hwDocsQamDVBInputTSPackets
+                  Counter64,
+                hwDocsQamDVBInputTSCountOfJitterOverflow
+                  Counter64,
+                hwDocsQamDVBInputTSCountOfJitterUnderflow
+                  Counter64,
+                hwDocsQamDVBInputTSDiscontinuityCounter
+                  Counter64
+                }
+        
+        -- 1.3.6.1.4.1.2011.6.187.23.1.1   
+        hwDocsQamDVBInputTSStatisticsIndex        OBJECT-TYPE
+            SYNTAX      Unsigned32 (1..65535)
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "Indicates the index of statistics table for input TS.
+                "
+            ::= { hwDocsQamDVBInputTSStatisticsEntry 1 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.23.1.2   
+        hwDocsQamDVBInputTSStatisticsOperMode        OBJECT-TYPE
+            SYNTAX      INTEGER
+            {
+              clearStatistic(1),
+              invalid(-1)
+            }
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "Indicates the operation mode. The set operation can clear statistics for input TS. 
+                 Options: 
+                 1. clearStatistic(1) -indicates clearing statistics for input TS
+                 2. invalid(-1)       -indicates invalid
+                "
+            ::= { hwDocsQamDVBInputTSStatisticsEntry 2 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.23.1.3   
+        hwDocsQamDVBInputTSPackets        OBJECT-TYPE
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates packet statistics for input TS.
+                "
+            ::= { hwDocsQamDVBInputTSStatisticsEntry 3 }
+
+        -- 1.3.6.1.4.1.2011.6.187.23.1.4   
+        hwDocsQamDVBInputTSCountOfJitterOverflow        OBJECT-TYPE
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the jitter overflow statistics.
+                "
+            ::= { hwDocsQamDVBInputTSStatisticsEntry 4 }
+          
+        -- 1.3.6.1.4.1.2011.6.187.23.1.5   
+        hwDocsQamDVBInputTSCountOfJitterUnderflow        OBJECT-TYPE
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the jitter underflow statistics.
+                "
+            ::= { hwDocsQamDVBInputTSStatisticsEntry 5 }   
+            
+        -- 1.3.6.1.4.1.2011.6.187.23.1.6  
+        hwDocsQamDVBInputTSDiscontinuityCounter        OBJECT-TYPE
+            SYNTAX      Counter64
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the discontinuity counter of input TS.
+                "
+            ::= { hwDocsQamDVBInputTSStatisticsEntry 6 }         
+            
+    -- the traps VbOids
+    hwDocsQamNotificationObject OBJECT IDENTIFIER ::= { hwEqamAn 24 }
+    
+    hwDocsQamNotificationProgramID OBJECT-TYPE
+        SYNTAX Integer32(1..65535)
+        MAX-ACCESS  accessible-for-notify
+        STATUS current
+        DESCRIPTION
+            "Program ID."
+        ::= { hwDocsQamNotificationObject 1 }
+
+    hwDocsQamNotificationPID OBJECT-TYPE
+        SYNTAX Integer32(0..8190)
+        MAX-ACCESS  accessible-for-notify
+        STATUS current
+        DESCRIPTION
+            "PID."
+        ::= { hwDocsQamNotificationObject 2 }
+		
+    hwDocsQamDVBPATErrorTrap NOTIFICATION-TYPE
+        OBJECTS {
+            hwDocsQamInputTSIndex
+            }
+        STATUS  current
+        DESCRIPTION
+            "The hwDocsQamDVBPATErrorEvent will be sent
+             when the content of input PAT is incorrect.
+            "
+        ::= { hwEqamAn 25 }	
+
+    hwDocsQamDVBPATMissingTrap NOTIFICATION-TYPE
+        OBJECTS {
+            hwDocsQamInputTSIndex
+            }
+        STATUS  current
+        DESCRIPTION
+            "The hwDocsQamDVBPATMissingEvent will be sent
+             when PAT is missing.
+            "
+        ::= { hwEqamAn 26 }
+
+    hwDocsQamDVBPMTErrorTrap NOTIFICATION-TYPE
+        OBJECTS {
+            hwDocsQamInputTSIndex,
+	    hwDocsQamNotificationProgramID,
+	    hwDocsQamNotificationPID
+            }
+        STATUS  current
+        DESCRIPTION
+            "The hwDocsQamDVBPMTErrorEvent will be sent
+             when the content of input PMT is incorrect.
+            "
+        ::= { hwEqamAn 27 }	
+
+    hwDocsQamDVBPMTMissingTrap NOTIFICATION-TYPE
+        OBJECTS {
+            hwDocsQamInputTSIndex,
+	    hwDocsQamNotificationProgramID,
+	    hwDocsQamNotificationPID
+            }
+        STATUS  current
+        DESCRIPTION
+            "The hwDocsQamDVBPMTMissingEvent will be sent
+             when PMT is missing.
+            "
+        ::= { hwEqamAn 28 }	
+
+    hwDocsQamDVBContinutyCounterErrorTrap NOTIFICATION-TYPE
+        OBJECTS {
+            hwDocsQamInputTSIndex
+            }
+        STATUS  current
+        DESCRIPTION
+            "The hwDocsQamDVBContinutyCounterErrorEvent will be sent
+             when the continuity counter error rate is too high.
+            "
+        ::= { hwEqamAn 29 }			
+END

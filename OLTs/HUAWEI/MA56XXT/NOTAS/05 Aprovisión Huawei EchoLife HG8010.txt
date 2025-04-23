@@ -1,0 +1,20 @@
+
+
+ont-lineprofile gpon profile-id 10
+tcont 4 dba-profile-id 10
+gem add 1 eth tcont 4
+mapping-mode vlan
+gem mapping 1 0 vlan 100
+commit
+quit
+
+interface gpon 0/0
+
+port 0 ont-auto-find enable
+
+display ont autofind 0
+
+ont confirm 0 ontid 1 sn-auth 48575443A9E78E32 omci ont-lineprofile-id 10 ont-srvprofile-id 10 desc "ONT Huawei Echolife 8010"
+quit
+
+service-port 1003 vlan 100 gpon 0/0/0 ont 1 gemport 1 multi-service user-vlan 100 tag-transform translate inbound traffic-table index 100 outbound traffic-table index 100

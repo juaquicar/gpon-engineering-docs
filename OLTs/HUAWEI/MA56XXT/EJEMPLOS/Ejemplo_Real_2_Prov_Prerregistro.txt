@@ -1,0 +1,12 @@
+****************************************************
+***     PROVISIONAMIENTO  0/0/0 ONT ID 0       ****
+****************************************************
+
+interface gpon 0/0
+display ont autofind 0
+ont add 0 1 sn-auth 485754438d2327E omci ont-lineprofile-id 10 ont-srvprofile-id 10 desc "ONT PREREGISTRADA TAL"
+ont ipconfig 0 0 dhcp vlan 4000 priority 4
+quit
+service-port 1000 vlan 2000 gpon 0/0/0 ont 0 gemport 1 multi-service user-vlan 2000 tag-transform translate inbound traffic-table index 105 outbound traffic-table index 105
+service-port 1001 vlan 3000 gpon 0/0/0 ont 0 gemport 2 multi-service user-vlan 3000 tag-transform translate inbound traffic-table index 100 outbound traffic-table index 100
+service-port 1002 vlan 4000 gpon 0/0/0 ont 0 gemport 3 multi-service user-vlan 4000 tag-transform translate inbound traffic-table index 99 outbound traffic-table index 99

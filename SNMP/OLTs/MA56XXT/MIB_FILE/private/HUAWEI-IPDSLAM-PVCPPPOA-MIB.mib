@@ -1,0 +1,137 @@
+-- ============================================================================
+-- Copyright (C) 2014 by  HUAWEI TECHNOLOGIES. All rights reserved.
+-- Description:The mib is used for defining huawei's IPDSLAM PVCPPPOA MIB objects.
+-- Reference:  RFC2320 RFC2225
+-- Version:    V1.06
+-- ============================================================================
+HUAWEI-IPDSLAM-PVCPPPOA-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+	OBJECT-TYPE, MODULE-IDENTITY
+	        FROM SNMPv2-SMI	       		
+	huaweiUtility
+	        FROM HUAWEI-MIB    
+	TruthValue
+	        FROM SNMPv2-TC;  
+		 
+				
+hwDslamPPPoA MODULE-IDENTITY
+	LAST-UPDATED "201407301648Z"
+	ORGANIZATION "Huawei Technologies Co.,Ltd."
+	CONTACT-INFO                                       
+	             "Huawei Industrial Base               
+	              Bantian, Longgang                    
+	              Shenzhen 518129                      
+	              People's Republic of China           
+	              Website: http://www.huawei.com       
+	              Email: support@huawei.com            
+	             "                                     
+	DESCRIPTION 
+		     "The mib is used for defining huawei's IPDSLAM PVCPPPOA MIB objects."  
+        
+        --  Revision history	  
+        REVISION     "201407301648Z" 
+	DESCRIPTION  "V1.06, correct the default enumeration name, remove the hyphen (-) in the enumeration name of."
+
+        REVISION     "201406071309Z" 
+	DESCRIPTION  "V1.05, For the same HUAWEI-MIB defined in the agreement, modify hwIpDslamPvcPPPoA to hwDslamPPPoA.
+	              SYNTAX correct the enumeration name, remove the hyphen (-) in the enumeration name of."
+    
+        REVISION     "201310290000Z" 
+	DESCRIPTION  "V1.04, added hwIpDslamPPPoAAgingMode."
+
+        REVISION     "201008240000Z" 
+	DESCRIPTION  "V1.03, modified the description of hwIpDslamPPPoAMacMode, hwIpDslamPPPoAUserId."
+	
+	REVISION     "201003160000Z" 
+	DESCRIPTION  "V1.02, modified the description of hwIpDslamPPPoASwitch, hwIpDslamPPPoAMacMode and hwIpDslamPPPoAMRUSwitch."  
+			
+	REVISION     "201001090900Z" 
+	DESCRIPTION  "V1.01, modified the description and fix the compiling error."   
+	
+	REVISION     "200407050000Z"
+	DESCRIPTION  "V1.00, initial version."
+
+        ::= { huaweiUtility 44 }
+    	                                      
+
+-- System Management Parameter
+hwIpDslamPPPoASwitch OBJECT-TYPE
+	      SYNTAX      TruthValue
+	      MAX-ACCESS  read-write
+	      STATUS      current
+	      DESCRIPTION
+	         "
+	         Indicates the global enable switch of PPPoA to PPPoE conversion.
+	         DEFVAL 	  {false}
+	         "
+	      ::= { hwDslamPPPoA 1 }   
+	
+hwIpDslamPPPoAMacMode OBJECT-TYPE
+	      SYNTAX INTEGER
+		      {
+		       multiMac(1),
+		       singleMac(2)
+	 	      }
+	      MAX-ACCESS  read-write
+	      STATUS      current
+	      DESCRIPTION
+	         "
+	         Indicates the mode for allocating the source MAC addresses during the conversion from PPPoA to PPPoE.
+	         Options:
+	         1. multiMac(1)    -indicates the mode is multi-mac
+	         2. singleMac(2)   -indicates the mode is single-mac
+	         DEFVAL 	  {multiMac}
+	         " 
+	      ::= { hwDslamPPPoA 2 }
+	      
+hwIpDslamPPPoAUserId OBJECT-TYPE
+	      SYNTAX INTEGER
+		      {
+		       hostUniq(1),
+		       relaySessionId(2)
+	 	      }
+	      MAX-ACCESS  read-write
+	      STATUS      current
+	      DESCRIPTION
+	         "
+	         The selection of user identifier in PPPoE of PPPoA2E.
+	         Options:
+	         1. hosUniq(1)        -one of the fields of PPP packet, it indicates that PPP choose host-uniq to take user identify information
+	         2. relaySessionId(2) -one of the fields of PPP packet, it indicates that PPP choose relay-session-id to take user identify information
+	         DEFVAL 	  {hosUniq}
+	         "
+	      ::= { hwDslamPPPoA 3 }	
+	      
+hwIpDslamPPPoAMRUSwitch OBJECT-TYPE
+	      SYNTAX      TruthValue
+	      MAX-ACCESS  read-write
+	      STATUS      current
+	      DESCRIPTION
+	         "
+	         Sets the MRU negotiation in PPPoA to PPPoE conversion.
+	         DEFVAL 	  {false}
+	         "
+	      ::= { hwDslamPPPoA 4 }  	
+
+hwIpDslamPPPoAAgingMode OBJECT-TYPE
+	      SYNTAX INTEGER
+		      {
+		       lcpEcho(1),
+		       lcpAndService(2),
+		       lcpAndDownService(3)
+	 	      }
+	      MAX-ACCESS  read-write
+	      STATUS      current
+	      DESCRIPTION
+	         "
+	         Indicates the aging mode for the conversion from PPPoA to PPPoE.
+	         Options:
+	         1. lcpEcho(1)    -indicates the aging mode is lcp echo.
+	         2. lcpAndService(2)   -indicates the aging mode is lcp echo and service.
+	         3. lcpAndDownService(3)   -indicates the aging mode is lcp echo and down service.
+	         DEFVAL 	  {lcpAndService}
+	         " 
+	      ::= { hwDslamPPPoA 5 }	      		
+	      
+END

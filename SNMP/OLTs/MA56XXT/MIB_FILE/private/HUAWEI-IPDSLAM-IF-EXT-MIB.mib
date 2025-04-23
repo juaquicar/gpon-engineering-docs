@@ -1,0 +1,198 @@
+-- ============================================================================
+-- Copyright (C) 2015 by  HUAWEI TECHNOLOGIES. All rights reserved.
+--
+-- Description:  The extend MIB module is used for redefining some leaves of the IF-MIB.
+-- Reference:  
+-- Version:     V1.02
+   
+
+  
+-- ============================================================================
+    HUAWEI-IPDSLAM-IF-EXT-MIB DEFINITIONS ::= BEGIN
+        IMPORTS
+            OBJECT-TYPE, MODULE-IDENTITY
+                FROM SNMPv2-SMI            
+            ifEntry
+                FROM IF-MIB                
+            huaweiUtility
+                FROM HUAWEI-MIB;
+    
+    
+        hwIpDslamIfExtMIB MODULE-IDENTITY 
+            LAST-UPDATED "201504100000Z"
+            ORGANIZATION "Huawei Technologies Co.,Ltd."
+            CONTACT-INFO 
+                         "Huawei Industrial Base
+                         Bantian, Longgang
+                         Shenzhen 518129
+                         People's Republic of China
+                         Website: http://www.huawei.com
+                         Email: support@huawei.com
+                         "
+            DESCRIPTION 
+                "The extend MIB module is used for redefining some leaves of the IF-MIB."		
+
+		
+-- Revision history  
+       REVISION     "201504100000Z"
+       DESCRIPTION  "V1.02, Modify the description of the ifAdminStatus and ifOperStatus."
+	   
+       REVISION     "201504070000Z"
+       DESCRIPTION  "V1.01, Modify the description of the extend MIB module."
+	   
+       REVISION     "201504020000Z"
+       DESCRIPTION  "V1.00, Initial version."
+	   
+	   ::= { huaweiUtility 191 }
+
+-- node define
+
+        ifAdminStatus OBJECT-TYPE
+            SYNTAX INTEGER
+                {
+                up(1),
+                down(2),
+                testing(3),
+-- huawei expand
+                block(65536),               -- Blocking operation
+                unblock(65537),             -- Unblocking operation
+                reset(65538),               -- Reset
+                localloopback(65539),       -- Local loopback
+                remoteloopback(65540),      -- Remote loopback
+                payloadloopback(65541),     -- Payload loopback
+                unloopback(65542),          -- Canceling loopback
+                linkrxblock(65543),         -- Blocking the Rx on a link
+                linktxblock(65544),         -- Blocking the Tx on a link
+                linkallblock(65545),        -- Blocking both the Rx and Tx on a link
+                linkrxunblock(65546),       -- Unblocking the Rx on a link
+                linktxunblock(65547),       -- Unblocking the Tx on a link
+                linkallunblock(65548),      -- Unblocking both the Rx and Tx on a link
+                adslloopbackafe(65549),     -- AFE looback on an ADSL port
+                adslloopbackhybrid(65550)   -- HYBRID loopback on an ADSL port
+                }
+            MAX-ACCESS read-write
+            STATUS current
+            DESCRIPTION
+                "The current operational state of the interface.  The
+                testing(3) state indicates that no operational packets
+                can be passed.  If ifAdminStatus is down(2) then
+                ifOperStatus should be down(2).  If ifAdminStatus is
+                changed to up(1) then ifOperStatus should change to
+                up(1) if the interface is ready to transmit and
+                receive network traffic; it should change to
+                dormant(5) if the interface is waiting for external
+                actions (such as a serial line waiting for an incoming
+                connection); it should remain in the down(2) state if
+                and only if there is a fault that prevents it from
+                going to the up(1) state; it should remain in the
+                notPresent(6) state if the interface has missing
+                (typically, hardware) components.
+
+                huawei mib expand from 65536 .
+
+                Because  management states in the standard MIB can't satisfy
+                the request of all kinds of the product ,
+                the extension is performed.
+                Options:
+                1. up(1)                           - indicates up operation
+                2. down(2)                         - indicates down operation
+                3. testing(3)                      - indicates testing operation
+                4. block(65536)                    - indicates blocking operation
+                5. unblock(65537)                  - indicates unblocking operation
+                6. reset(65538)                    - indicates reseting operation
+                7. localloopback(65539)            - indicates local looping back operation
+                8. remoteloopback(65540)           - indicates remote looping back operation
+                9. payloadloopback(65541)          - indicates Payload looping back operation
+                10.unloopback(65542)               - indicates Canceling loopback operation
+                11.linkrxblock(65543)              - indicates Blocking the Rx on a link
+                12.linktxblock(65544)              - indicates Blocking the Tx on a link
+                13.linkallblock(65545)             - indicates Blocking both the Rx and Tx on a link
+                14.linkrxunblock(65546)            - indicates Unblocking the Rx on a link
+                15.linktxunblock(65547)            - indicates Unblocking the Tx on a link
+                16.linkallunblock(65548)           - indicates Unblocking both the Rx and Tx on a link
+                17.adslloopbackafe(65549)          - indicates AFE looback operation on an ADSL port
+                18.adslloopbackhybrid(65550)       - indicates HYBRID loopback operation on an ADSL port
+                "
+            ::= { ifEntry 7 }
+
+        ifOperStatus OBJECT-TYPE
+            SYNTAX INTEGER
+                {
+                up(1),
+                down(2),
+                testing(3),
+                unknown(4),
+                dormant(5),
+                notPresent(6),
+                lowerLayerDown(7),
+                activing(65536),
+                block(65537),
+                config(65538),
+                localloopback(65539),           -- Local loopback
+                remoteloopback(65540),          -- Remote loopback
+                payloadloopback(65541),         -- Payload loopback
+                blockandlocalloopback(65542),   -- Blocking and performing the local loopback
+                blockandremoteloopback(65543),  -- Blocking and performing the remote loopback
+                blockandpayloadloopback(65544), -- Blocking and performing the payload loopback
+                linkrxblock(65545),             -- Blocking the Rx on a link
+                linktxblock(65546),             -- Blocking the Tx on a link
+                linkallblock(65547),            -- Blocking both the Rx and Tx on a link
+                fault(65548),                   -- Fault
+                unconfig(65549),                -- Not configured
+                empty(65550),                   -- Empty
+                adslloopbackafe(65551),         -- AFE looback on an ADSL port
+                adslloopbackhybrid(65552)       -- HYBRID loopback on an ADSL port
+                }
+            MAX-ACCESS read-only
+            STATUS current
+            DESCRIPTION
+                "The current operational state of the interface.  The
+                 testing(3) state indicates that no operational packets
+                 can be passed.  If ifAdminStatus is down(2) then
+                 ifOperStatus should be down(2).  If ifAdminStatus is
+                 changed to up(1) then ifOperStatus should change to
+                 up(1) if the interface is ready to transmit and
+                 receive network traffic; it should change to
+                 dormant(5) if the interface is waiting for external
+                 actions (such as a serial line waiting for an incoming
+                 connection); it should remain in the down(2) state if
+                 and only if there is a fault that prevents it from
+                 going to the up(1) state; it should remain in the
+                 notPresent(6) state if the interface has missing
+                 (typically, hardware) components.
+
+                 huawei mib expand from 65536 .
+
+                 Because  management states in the standard MIB can't satisfy
+                 the request of all kinds of the product ,
+                 the extension is performed.
+
+                 Options:
+                 1. up(1)                               - indicates that the operation state is up
+                 2. down(2)                             - indicates that the operation state is down
+                 3. testing(3)                          - indicates that the operation state is testing
+                 4. unknown(4)                          - indicates that the operation state is unknown
+                 5. dormant(5)                          - indicates that the operation state is dormant
+                 6. notPresent(6)                       - indicates that the operation state is notPresent
+                 7. lowerLayerDown(7)                   - indicates that the operation state is lowerLayerDown
+                 8. activing(65536)                     - indicates that the operation state is activing
+                 9. block(65537)                        - indicates that the operation state is block
+                 10.config(65538)                       - indicates that the operation state is config
+                 11.localloopback(65539)                - indicates that the operation state is Local loopback
+                 12.remoteloopback(65540)               - indicates that the operation state is Remote loopback
+                 13.payloadloopback(65541)              - indicates that the operation state is Payload loopback
+                 14.blockandlocalloopback(65542)        - indicates that the operation state is Blocking and performing the local loopback
+                 15.blockandremoteloopback(65543)       - indicates that the operation state is Blocking and performing the remote loopback
+                 16.blockandpayloadloopback(65544)      - indicates that the operation state is Blocking and performing the payload loopback
+                 17.linkrxblock(65545)                  - indicates that the operation state is Blocking the Rx on a link
+                 18.linktxblock(65546)                  - indicates that the operation state is Blocking the Tx on a link
+                 19.linkallblock(65547)                 - indicates that the operation state is Blocking both the Rx and Tx on a link
+                 20.fault(65548)                        - indicates that the operation state is fault
+                 21.unconfig(65549)                     - indicates that the operation state is not configured
+                 22.empty(65550)                        - indicates that the operation state is empty
+                 23.adslloopbackafe(65551)              - indicates AFE looback on an ADSL port
+                 24.adslloopbackhybrid(65552)           - indicates HYBRID loopback on an ADSL port
+                "
+            ::= { ifEntry 8 }
+			
+    END

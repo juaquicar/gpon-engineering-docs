@@ -1,0 +1,114 @@
+****************************************************
+***             PUESTA EN MARCHA                ****
+****************************************************
+
+vlan 100 smart
+vlan 200 smart
+vlan 500 smart
+vlan desc 100 description INTERNET
+vlan desc 200 description VOIP
+vlan desc 500 description MANAGEMENT
+port vlan 100 0/9 0
+port vlan 200 0/9 0
+port vlan 500 0/9 0
+
+interface vlanif 500
+ip address 172.20.21.1 24 description "lan_500_management"
+quit
+interface vlanif 200
+ip address 172.20.20.1 24 description "lan_200_voip"
+quit
+
+dba-profile add profile-id 100 profile-name “UPINTERNET100M” type3 assure 100224 max 100224
+dba-profile add profile-id 101 profile-name “VOIP” type1 fix 1024
+dba-profile add profile-id 102 profile-name “GESTION2MFIXED” type1 fix 1024
+dba-profile add profile-id 50 profile-name "OMCI_DBA" type2 assure 5056
+
+traffic table ip index 100 cir 102400 pir 102400 priority 0 priority-policy local-Setting
+traffic table ip index 101 cir 1024 pir 1024 priority 6 priority-policy local-Setting
+traffic table ip index 102 cir 2048 pir 2048 priority 5 priority-policy local-Setting
+
+traffic table ip index 10 name "10 megas" cir 10240 cbs 329680 pir 10240 pbs 329680 priority 0 priority-policy tag-in-package
+traffic table ip index 30 name "30 megas" cir 30336 cbs 972752 pir 30336 pbs 972752 priority 0 priority-policy tag-in-package
+traffic table ip index 40 name "40 megas" cir 40384 cbs 1294288 pir 40384 pbs  1294288 priority 0 priority-policy tag-in-package
+traffic table ip index 50 name "50 megas" cir 50496 cbs 1617872 pir 50496 pbs  1617872 priority 0 priority-policy tag-in-package
+traffic table ip index 60 name "60 megas" cir 60608 cbs 1941456 pir 60608 pbs  1941456 priority 0 priority-policy tag-in-package
+traffic table ip index 70 name "70 megas" cir 70720 cbs 2265040 pir 70720 pbs  2265040 priority 0 priority-policy tag-in-package
+traffic table ip index 80 name "80 megas" cir 80832 cbs 2588624 pir 80832 pbs  2588624 priority 0 priority-policy tag-in-package
+traffic table ip index 90 name "90 megas" cir 90880 cbs 2910160 pir 90880 pbs  2910160 priority 0 priority-policy tag-in-package
+traffic table ip index 100 name "100 megas" cir 100928 cbs 3231696 pir 100928  pbs 3231696 priority 0 priority-policy tag-in-package
+traffic table ip index 300 name "300_megues" cir 329984 cbs 10240000 pir 329984 pbs 10240000 priority 0 priority-policy tag-in-package
+
+
+ont-srvprofile gpon profile-id 10 profile-name "ADAPTIVE"
+ont-port pots adaptive eth adaptive catv adaptive
+commit
+quit
+ont-srvprofile gpon profile-id 11 profile-name "HG8245A"
+ont-port pots 2 eth 4 
+port vlan eth 1 transparent 
+port vlan eth 2 transparent 
+port vlan eth 3 transparent 
+port vlan eth 4 transparent        
+commit
+quit
+ont-srvprofile gpon profile-id 12 profile-name "HG8010H"
+ont-port eth 1 
+port vlan eth 1 transparent 
+commit
+quit
+ont-srvprofile gpon profile-id 13 profile-name "HG8247H"
+ont-port pots 2 eth 4 catv 1 
+port vlan eth 1 transparent 
+port vlan eth 2 transparent 
+port vlan eth 3 transparent 
+port vlan eth 4 transparent 
+commit
+quit
+ont-srvprofile gpon profile-id 14 profile-name "HG8346M"
+ont-port pots 2 eth 4  
+port vlan eth 1 transparent 
+port vlan eth 2 transparent 
+port vlan eth 3 transparent 
+port vlan eth 4 transparent 
+commit
+quit
+
+
+
+ont-lineprofile gpon profile-id 10 profile-name "Line-Profile-GENERICO"
+fec-upstream enable
+tr069-management enable
+tr069-management ip-index 0
+tcont 0 dba-profile-id 50
+tcont 1 dba-profile-id 100
+tcont 2 dba-profile-id 101
+tcont 3 dba-profile-id 102
+gem add 1 eth tcont 1 encrypt on
+gem add 2 eth tcont 2 encrypt on
+gem add 3 eth tcont 3 encrypt on
+gem mapping 1 1 vlan 100
+gem mapping 2 2 vlan 200
+gem mapping 3 3 vlan 500
+commit
+quit
+
+ont-lineprofile gpon profile-id 15 profile-name "HG8010"
+tcont 4 dba-profile-id 10
+gem add 1 eth tcont 4
+mapping-mode vlan
+gem mapping 1 0 vlan 100
+commit
+quit
+
+
+interface gpon 0/0
+port 0 ont-auto-find enable
+port 0 fec enable
+port 1 ont-auto-find enable
+port 2 ont-auto-find enable
+port 3 ont-auto-find enable
+port 4 ont-auto-find enable
+port 5 ont-auto-find enable
+port 6 ont-auto-find enable
+port 7 ont-auto-find enable

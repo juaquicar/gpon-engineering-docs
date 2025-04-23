@@ -1,0 +1,13 @@
+****************************************************
+***     APROVISIONAMIENTO  0/0/0 ONT ID 0       ****
+****************************************************
+
+interface gpon 0/0
+display ont autofind 0
+ont confirm 0 ontid 0 sn-auth 48575443267BCA34 omci ont-lineprofile-id 10 ont-srvprofile-id 14 desc "TEST HG8346MH"
+ont ipconfig 0 0 dhcp vlan 500 priority 4
+ont ipconfig 0 0 dhcp vlan 200 priority 4
+quit
+service-port 1000 vlan 100 gpon 0/0/0 ont 0 gemport 1 multi-service user-vlan 100 tag-transform translate inbound traffic-table index 100 outbound traffic-table index 100
+service-port 2000 vlan 200 gpon 0/0/0 ont 0 gemport 2 multi-service user-vlan 200 tag-transform translate inbound traffic-table index 101 outbound traffic-table index 101
+service-port 5000 vlan 500 gpon 0/0/0 ont 0 gemport 3 multi-service user-vlan 500 tag-transform translate inbound traffic-table index 102 outbound traffic-table index 102

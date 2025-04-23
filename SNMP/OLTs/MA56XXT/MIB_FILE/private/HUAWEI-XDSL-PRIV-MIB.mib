@@ -1,0 +1,768 @@
+-- ============================================================================
+-- Copyright (C) 2015 by  HUAWEI TECHNOLOGIES. All rights reserved.
+-- Description:  This MIB is used for defining Huawei's xdsl priv management MIB objects.
+-- Reference:
+-- Version: V1.10
+-- ============================================================================
+
+   HUAWEI-XDSL-PRIV-MIB DEFINITIONS ::= BEGIN
+
+        IMPORTS
+            MODULE-IDENTITY, OBJECT-TYPE, Unsigned32, NOTIFICATION-TYPE, Integer32, Counter32, Gauge32
+               FROM SNMPv2-SMI
+            TEXTUAL-CONVENTION
+               FROM SNMPv2-TC
+            ifIndex
+               FROM IF-MIB
+            TruthValue, RowStatus, DateAndTime
+               FROM SNMPv2-TC
+            SnmpAdminString
+               FROM SNMP-FRAMEWORK-MIB
+            MODULE-COMPLIANCE, OBJECT-GROUP, NOTIFICATION-GROUP
+               FROM SNMPv2-CONF
+            hwFrameIndex, hwSlotIndex, hwPortIndex
+               FROM HUAWEI-DEVICE-MIB
+            hwXdsl
+               FROM HUAWEI-XDSL-LINE-MIB;
+
+        SELTOPERTYPE ::= TEXTUAL-CONVENTION
+    	    STATUS current
+    	    DESCRIPTION
+    	        "the operation type of selt test
+    	         Options:
+    	         1. stop(0)       - Stop the VDSL or ADSL SELT, which is not supported currently
+    	    	 2. adslstart(1)  - Start the ADSL SELT in the VDSL compatible mode, which is not supported currently
+    	    	 3. vdsl2start(2) - Start the VDSL SELT
+    	    	"
+    	    SYNTAX INTEGER {
+    	    	stop(0),
+    	    	adslstart(1),
+    	    	vdsl2start(2)
+    	    }
+
+        SELTOPERRESULT ::= TEXTUAL-CONVENTION
+    	    STATUS current
+    	    DESCRIPTION  "the result of selt test
+    	                  Options:
+    	    	          1. normal(1) - The result of selt test is normal
+    	    	          2. fail(2)   - The result of selt test is fail
+    	    	          3. abort(3)  - Selt test abnormal
+    	                 "
+    	    SYNTAX INTEGER {
+    	         normal(1),
+    	         fail(2),
+    	         abort(3)
+    	    }
+
+        SELTRESULTLASTFLAG ::= TEXTUAL-CONVENTION
+    	    STATUS current
+    	    DESCRIPTION  "last flag of selt test data
+    	                  Options:
+    	                  1. false(0) - Flag of selt is false
+    	                  2. true(1)  - Flag of selt is true
+    	                 "
+    	    SYNTAX INTEGER {
+    	         false(0),
+    	         true(1)
+    	    }
+
+        SELTPARAMLOOPTERMIN ::= TEXTUAL-CONVENTION
+    	    STATUS current
+    	    DESCRIPTION
+    	         "Definition of the terminal type in the SELT
+    	         Options:
+    	         1. open(0)        - Open
+    	         2. short(1)       - Closed
+    	         3. unknown(2)     - Unknown
+    	         4. terminated(3)  - Connected
+    	         "
+    	    SYNTAX INTEGER {
+    	         open(0),
+    	         short(1),
+    	         unknown(2),
+    	         terminated(3)
+    	    }
+
+        SELTPARAMLOOPGAUGE ::= TEXTUAL-CONVENTION
+    	    STATUS current
+    	    DESCRIPTION
+    	        "Gauge specification in the SELT
+    	         Options:
+    	         1. greater26awg(1)   - Greater than 26 AWG
+    	         2. equal26awg(2)     - Equal to 26 AWG
+    	         3. equal24awg(3)     - Equal to 24 AWG
+    	         4. less24awg(4)      - Smaller than 24AWG
+    	         5. unknownawg(5)     - Unknown
+    	        "
+    	    SYNTAX INTEGER {
+    	         greater26awg(1),
+    	         equal26awg(2),
+    	         equal24awg(3),
+    	         less24awg(4),
+    	         unknownawg(5)
+    	    }
+
+  	hwXdslPriv MODULE-IDENTITY
+	    LAST-UPDATED "201501290000Z"
+	    ORGANIZATION
+                "Huawei Technologies Co.,Ltd."
+            CONTACT-INFO
+                         "Huawei Industrial Base
+                          Bantian, Longgang
+                          Shenzhen 518129
+                          People's Republic of China
+                          Website: http://www.huawei.com
+                          Email: support@huawei.com
+                         "
+	    DESCRIPTION
+    	    	"This MIB is used for defining Huawei's xdsl priv management MIB objects."
+
+	    --  Revision history
+	    REVISION     "201501290000Z"
+            DESCRIPTION  "V1.10, modify all of the mib node name."
+	    REVISION     "201207200000Z"
+            DESCRIPTION  "V1.08, delete unnecessary en dashes."
+
+	    REVISION     "201201090000Z"
+            DESCRIPTION  "V1.07, modify the description of the leaf hwXdslSeltTestParaVarUerC, hwXdslSeltTestParamAttnAt180KHZ, hwXdslSeltTestParamAttnAt300KHZ."
+
+	    REVISION     "201105040000Z"
+            DESCRIPTION  "V1.06, add leaf node hwXdslSeltTestParamCalcEnable of hwXdslSeltTestTable for setting selt test calculation switch.
+                          Add hwXdslSeltCalibrationTable for describing calibration data of selt test."
+
+            REVISION     "201102210000Z"
+            DESCRIPTION  "V1.05, add leaf node hwXdslSeltTestParaVarUerC,hwXdslSeltTestParaUerMmdC,hwXdslSeltTestParaQlnMmdC
+                          hwXdslSeltTestParaUerStatus,hwXdslSeltTestParaQlnStatus for g996.2 selt.
+                          modify the description of the leaf hwXdslSeltTestParamInbandNoise.
+                         "
+
+	    REVISION     "201010290000Z"
+            DESCRIPTION  "V1.04, add value -1(invalid) for hwXdslSeltLevel and modify the description.
+                         "
+
+            REVISION     "201009250000Z"
+            DESCRIPTION  "V1.03, add leaf node hwXdslSeltTestParamUnCalibLineScale,hwXdslSeltTestParamUnCalibEchoRespRealSegment1,
+                          hwXdslSeltTestParamUnCalibEchoRespRealSegment2, hwXdslSeltTestParamUnCalibEchoRespImgSegment1,
+                          hwXdslSeltTestParamUnCalibEchoRespImgSegment2,hwXdslSeltTestParamQlnGroupSize, hwXdslSeltTestParamQmeC,
+                          hwXdslSeltTestParamUmeC and hwXdslSeltTestLevelTable for selt test.
+                         "
+
+
+	    REVISION     "201002080000Z"
+            DESCRIPTION  "V1.02, delete the definition of the trap node, include:
+                          hwXdsl2PrivSeltTestResultFirstFrameTrap, hwXdsl2PrivSeltTestResultSecondFrameTrap, hwXdsl2PrivSeltTestResultThirdFrameTrap,
+                          hwXdsl2PrivSeltTestResultFourFrameTrap, hwXdsl2PrivSeltTestResultFifthsFrameTrap, hwXdsl2PrivSeltTestResultSixthFrameTrap,
+	                  hwXdsl2PrivSeltTestResultSeventhFrameTrap, hwXdsl2PrivSeltTestOperResultTrap.
+                         "
+
+	    REVISION     "201001200000Z"
+            DESCRIPTION  "V1.01, add the definition of the trap node;
+                          modify leaf node MAX-ACCESS from accessible-for-notify to read-only:hwXdslSeltTestParamLoopLength,
+                          hwXdslSeltTestParamLoopTermin, hwXdslSeltTestParamUpShnCap, hwXdslSeltTestParamDwnShnCap, hwXdslSeltTestParamInbandNoise,
+                          hwXdslSeltTestParamTerminResp, hwXdslSeltTestParamUpMgnAtRate, hwXdslSeltTestParamDwnMgnAtRate, hwXdslSeltTestParamUpRateAtMgn,
+                          hwXdslSeltTestParamDwnRateAtMgn,hwXdslSeltTestParamAttnAt180KHZ,hwXdslSeltTestParamAttnAt300KHZ,hwXdslSeltTestParamQSPsdValue  for performance monitoring."
+
+            REVISION     "200701220000Z"
+            DESCRIPTION  "V1.00, initial version."
+
+	    ::= { hwXdsl 7 }
+
+     hwXdslTest                     OBJECT IDENTIFIER ::= { hwXdslPriv 1 }
+--          hwXdslSeltTestTable
+       hwXdslSeltTestTable  OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HWXDSLSELTTESTENTRY
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "This table contains the XDSL SELT configuration, SELT result, SELT data. The index of this table is ifIndex."
+            ::= { hwXdslTest 1 }
+
+        hwXdslSeltTestEntry  OBJECT-TYPE
+            SYNTAX          HWXDSLSELTTESTENTRY
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "This table contains the XDSL SELT configuration, SELT result, SELT data. The index of this entry is ifIndex."
+            INDEX           { ifIndex }
+            ::= { hwXdslSeltTestTable 1 }
+
+        HWXDSLSELTTESTENTRY ::=
+            SEQUENCE{
+                hwXdslSeltTestOperType       	    SELTOPERTYPE  ,
+                hwXdslSeltTestOperResult     	    SELTOPERRESULT ,
+                hwXdslSeltTestResultNo       	    Integer32  ,
+                hwXdslSeltTestResultLastFlag 	    SELTRESULTLASTFLAG,
+                hwXdslSeltTestResult         	    OCTET STRING ,
+                hwXdslSeltTestParamLoopLength 	    Integer32 ,
+                hwXdslSeltTestParamLoopTermin 	    SELTPARAMLOOPTERMIN ,
+                hwXdslSeltTestParamLoopGauge  	    SELTPARAMLOOPGAUGE ,
+                hwXdslSeltTestParamUpShnCap   	    Integer32 ,
+                hwXdslSeltTestParamDwnShnCap  	    Integer32 ,
+                hwXdslSeltTestParamInbandNoise 	    OCTET STRING ,
+                hwXdslSeltTestParamTerminResp 	    OCTET STRING ,
+                hwXdslSeltTestParamUpMgnAtRate       OCTET STRING ,
+                hwXdslSeltTestParamDwnMgnAtRate      OCTET STRING ,
+                hwXdslSeltTestParamUpRateAtMgn       OCTET STRING ,
+                hwXdslSeltTestParamDwnRateAtMgn      OCTET STRING ,
+                hwXdslSeltTestParamAttnAt180KHZ    Integer32 ,
+                hwXdslSeltTestParamAttnAt300KHZ    Integer32 ,
+                hwXdslSeltTestParamQSPsdValue      OCTET STRING,
+                hwXdslSeltTestParamUnCalibLineScale Unsigned32,
+                hwXdslSeltTestParamUnCalibEchoRespRealSegment1 OCTET STRING,
+                hwXdslSeltTestParamUnCalibEchoRespRealSegment2 OCTET STRING,
+                hwXdslSeltTestParamUnCalibEchoRespImgSegment1  OCTET STRING,
+                hwXdslSeltTestParamUnCalibEchoRespImgSegment2  OCTET STRING,
+                hwXdslSeltTestParamQlnGroupSize                Unsigned32,
+                hwXdslSeltTestParamQmeC                        INTEGER,
+                hwXdslSeltTestParamUmeC                        INTEGER,
+                hwXdslSeltTestParaVarUerC                      OCTET STRING,
+                hwXdslSeltTestParaUerMmdC                      Unsigned32,
+                hwXdslSeltTestParaQlnMmdC                      Unsigned32,
+                hwXdslSeltTestParaUerStatus                    INTEGER,
+                hwXdslSeltTestParaQlnStatus                    INTEGER,
+                hwXdslSeltTestParamCalcEnable                  INTEGER
+            }
+
+        hwXdslSeltTestOperType OBJECT-TYPE
+            SYNTAX      SELTOPERTYPE
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "This object is used to start the XDSL SELT. Only the start of the SELT is supported current. The stop of the SELT is not supported."
+            ::= { hwXdslSeltTestEntry 1 }
+
+        hwXdslSeltTestOperResult OBJECT-TYPE
+            SYNTAX      SELTOPERRESULT
+            MAX-ACCESS  accessible-for-notify
+            STATUS      current
+            DESCRIPTION
+                "Selt test operation result."
+            ::= { hwXdslSeltTestEntry 2 }
+
+        hwXdslSeltTestResultNo OBJECT-TYPE
+            SYNTAX      Integer32(1..255)
+            MAX-ACCESS  accessible-for-notify
+            STATUS      current
+            DESCRIPTION
+                "Selt test result serial number."
+            ::= { hwXdslSeltTestEntry 3 }
+
+        hwXdslSeltTestResultLastFlag OBJECT-TYPE
+            SYNTAX      SELTRESULTLASTFLAG
+            MAX-ACCESS  accessible-for-notify
+            STATUS      current
+            DESCRIPTION
+                "Last package flag for test result."
+            ::= { hwXdslSeltTestEntry 4 }
+
+        hwXdslSeltTestResult OBJECT-TYPE
+            SYNTAX      OCTET STRING(SIZE(0..1500))
+            MAX-ACCESS  accessible-for-notify
+            STATUS      current
+            DESCRIPTION
+                "  Selt test result data."
+            ::= { hwXdslSeltTestEntry 5 }
+
+        hwXdslSeltTestParamLoopLength OBJECT-TYPE
+            SYNTAX      Integer32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Selt test parameter Loop Length."
+            ::= { hwXdslSeltTestEntry 6 }
+
+        hwXdslSeltTestParamLoopTermin OBJECT-TYPE
+            SYNTAX      SELTPARAMLOOPTERMIN
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Selt test parameter Loop Termination."
+            ::= { hwXdslSeltTestEntry 7 }
+
+        hwXdslSeltTestParamLoopGauge OBJECT-TYPE
+            SYNTAX      SELTPARAMLOOPGAUGE
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+                "Selt test parameter Loop Gauge."
+            ::= { hwXdslSeltTestEntry 8 }
+
+        hwXdslSeltTestParamUpShnCap OBJECT-TYPE
+            SYNTAX      Integer32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Selt test parameter Upstream Shannon Capacity."
+            ::= { hwXdslSeltTestEntry 9 }
+
+        hwXdslSeltTestParamDwnShnCap OBJECT-TYPE
+            SYNTAX      Integer32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Selt test parameter Downstream Shannon Capacity."
+           ::= { hwXdslSeltTestEntry 10 }
+
+        hwXdslSeltTestParamInbandNoise OBJECT-TYPE
+            SYNTAX      OCTET STRING(SIZE(0..8192))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Selt test parameter Inband Noise
+                 4096 values that indicate inband noise in DB/Hz,
+                 covering XDSL bands, from 0 to 30 MHz.
+                "
+            ::= { hwXdslSeltTestEntry 11 }
+
+        hwXdslSeltTestParamTerminResp OBJECT-TYPE
+            SYNTAX      OCTET STRING(SIZE(0..1500))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Selt test parameter Termination Response
+                 180 values that indicate termination response magnitude from 0 to 18 kft.
+                "
+            ::= { hwXdslSeltTestEntry 12 }
+
+        hwXdslSeltTestParamUpMgnAtRate OBJECT-TYPE
+            SYNTAX      OCTET STRING(SIZE(0..1500))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Selt test parameter Upstream Rate vs. Margin
+                 This value is a measure of the quality of your upstream data
+                 signal relative to the noise on the line. Hundreds of values that
+                 indicate SNR margin in DB/Hz at a particular bit rate are provided,
+                 at a certain increments, up to 30 Mbps. This information may be plotted
+                 with the bit rate on the X-axis and the SNR margin on the Y-axis.
+                "
+            ::= { hwXdslSeltTestEntry 13 }
+
+        hwXdslSeltTestParamDwnMgnAtRate OBJECT-TYPE
+            SYNTAX      OCTET STRING(SIZE(0..1500))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Selt test parameter Downstream Rate vs. Margin
+                 This value is a measure of the quality of your downstream data
+                 signal relative to the noise on the line. Hundreds of values that
+                 indicate SNR margin in DB/Hz at a particular bit rate are provided,
+                 at a certain increments, up to 30 Mbps. This information may be plotted
+                 with the bit rate on the X-axis and the SNR margin on the Y-axis.
+                "
+            ::= { hwXdslSeltTestEntry 14 }
+
+        hwXdslSeltTestParamUpRateAtMgn OBJECT-TYPE
+            SYNTAX      OCTET STRING(SIZE(0..1500))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Selt test parameter Upstream Margin vs. Rate"
+            ::= { hwXdslSeltTestEntry 15 }
+
+        hwXdslSeltTestParamDwnRateAtMgn OBJECT-TYPE
+            SYNTAX      OCTET STRING(SIZE(0..1500))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Selt test parameter Downstream Margin vs. Rate"
+            ::= { hwXdslSeltTestEntry 16 }
+
+        hwXdslSeltTestParamAttnAt180KHZ OBJECT-TYPE
+            SYNTAX      Integer32
+            UNITS       "0.1 dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Selt test parameter AttnAt180KHZ.
+                 It ranges from -950 to 0 (physical values are -95 to 0 dB).
+                 The invalid value is -1. If no SELT is performed, no SELT data is generated
+                 because the SELT is incomplete, or no SELT data can be obtained from
+                 the port because the SELT data is aged and cleared, the invalid value will be returned.
+                 Unit: 0.1 dB
+                "
+            ::= { hwXdslSeltTestEntry 65535 }
+
+        hwXdslSeltTestParamAttnAt300KHZ OBJECT-TYPE
+            SYNTAX      Integer32
+            UNITS       "0.1 dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Selt test parameter AttnAt300KHZ.
+                 It ranges from -950 to 0 (physical values are -95 to 0 dB).
+                 The invalid value is -1. If no SELT is performed, no SELT data is generated
+                 because the SELT is incomplete, or no SELT data can be obtained from
+                 the port because the SELT data is aged and cleared, the invalid value will be returned.
+                 Unit: 0.1 dB
+                "
+           ::= { hwXdslSeltTestEntry 65536 }
+
+        hwXdslSeltTestParamQSPsdValue OBJECT-TYPE
+            SYNTAX      OCTET STRING(SIZE(0..8192))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Selt test parameter QuietSignal PSD.
+                 An array of 4096 16-bits values,
+                 designed for supporting up to 4096 (downstream) sub-carriers.
+                 It ranges from -150 to -40 units of 1dBm/Hz.
+                "
+            ::= { hwXdslSeltTestEntry 65537 }
+
+        hwXdslSeltTestParamUnCalibLineScale OBJECT-TYPE
+            SYNTAX      Unsigned32(0..4294967295)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The scale factor of uncalibrated echo response shall be coded as a 32 bit unsigned integer.
+                "
+            ::= { hwXdslSeltTestEntry 65538 }
+
+        hwXdslSeltTestParamUnCalibEchoRespRealSegment1 OBJECT-TYPE
+            SYNTAX      OCTET STRING(SIZE(0..8192))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The uncalibrated echo response, UER(i* UER_G*Df), shall be represented in linear format by a
+                 scale factor and a normalized complex number a(i)+j*b(i), where i is a frequency index i ranging
+                 from 0 to NSC-1, the subcarrier spacing, Df = 4.3125 kHz, and (NSC-1)*UER_G*Df is the
+                 highest frequency supported by the SELT-PMD functionality. The UER granularity parameter,
+                 UER_G, has two valid values: 1 and 2, indicating whether the measurements were performed using
+                 a tone spacing of 4.3125 kHz or of 8.625 kHz. If the uncalibrated echo response is being reported
+                 over a frequency range of 17.664 MHz or lower, UER_G shall be set to 1. If the uncalibrated echo
+                 response is being reported over a frequency range that is greater than 17.664 MHz, UER_G shall be
+                 set to 2.
+                 The scale factor shall be coded as a 32-bit unsigned integer. Both a(i) and b(i) shall be coded as
+                 32-bit 2's complement signed integers. The value of UER(i* UER_G*Df) shall be defined as:
+                 UER(i* UER_G*Df) = (scale/2^31)*(a(i)+j*b(i))/2^31. In order to maximize precision, the scale factor
+                 shall be chosen such that max(|a(i)|, |b(i)|) over all i is equal to 2^31-1.
+                 NOTE - This data format supports an UER(f) granularity of 2^(-31) and an UER(f) dynamic range of
+                 approximately +6 dB to -186 dB, however it does not imply any future accuracy requirements.
+                 An UER(i*UER_G* Df) value indicated as a(i) = b(i) = -2^31 is a special value. It indicates that no
+                 measurement could be done for this subcarrier either because it is not supported by the SELT-PMD
+                 function, or that the value is out of range to be represented.
+                "
+            ::= { hwXdslSeltTestEntry 65539 }
+
+        hwXdslSeltTestParamUnCalibEchoRespRealSegment2 OBJECT-TYPE
+            SYNTAX      OCTET STRING(SIZE(0..8192))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The uncalibrated echo response, UER(i* UER_G*Df), shall be represented in linear format by a
+                 scale factor and a normalized complex number a(i)+j*b(i), where i is a frequency index i ranging
+                 from 0 to NSC-1, the subcarrier spacing, Df = 4.3125 kHz, and (NSC-1)*UER_G*Df is the
+                 highest frequency supported by the SELT-PMD functionality. The UER granularity parameter,
+                 UER_G, has two valid values: 1 and 2, indicating whether the measurements were performed using
+                 a tone spacing of 4.3125 kHz or of 8.625 kHz. If the uncalibrated echo response is being reported
+                 over a frequency range of 17.664 MHz or lower, UER_G shall be set to 1. If the uncalibrated echo
+                 response is being reported over a frequency range that is greater than 17.664 MHz, UER_G shall be
+                 set to 2.
+                 The scale factor shall be coded as a 32-bit unsigned integer. Both a(i) and b(i) shall be coded as
+                 32-bit 2's complement signed integers. The value of UER(i* UER_G*Df) shall be defined as:
+                 UER(i* UER_G*Df) = (scale/2^31)*(a(i)+j*b(i))/2^31. In order to maximize precision, the scale factor
+                 shall be chosen such that max(|a(i)|, |b(i)|) over all i is equal to 2^31-1.
+                 NOTE - This data format supports an UER(f) granularity of 2^(-31) and an UER(f) dynamic range of
+                 approximately +6 dB to -186 dB, however it does not imply any future accuracy requirements.
+                 An UER(i*UER_G* Df) value indicated as a(i) = b(i) = -2^31 is a special value. It indicates that no
+                 measurement could be done for this subcarrier either because it is not supported by the SELT-PMD
+                 function, or that the value is out of range to be represented.
+                "
+            ::= { hwXdslSeltTestEntry 65540 }
+
+        hwXdslSeltTestParamUnCalibEchoRespImgSegment1 OBJECT-TYPE
+            SYNTAX      OCTET STRING(SIZE(0..8192))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+               "The uncalibrated echo response, UER(i* UER_G*Df), shall be represented in linear format by a
+                 scale factor and a normalized complex number a(i)+j*b(i), where i is a frequency index i ranging
+                 from 0 to NSC-1, the subcarrier spacing, Df = 4.3125 kHz, and (NSC-1)*UER_G*Df is the
+                 highest frequency supported by the SELT-PMD functionality. The UER granularity parameter,
+                 UER_G, has two valid values: 1 and 2, indicating whether the measurements were performed using
+                 a tone spacing of 4.3125 kHz or of 8.625 kHz. If the uncalibrated echo response is being reported
+                 over a frequency range of 17.664 MHz or lower, UER_G shall be set to 1. If the uncalibrated echo
+                 response is being reported over a frequency range that is greater than 17.664 MHz, UER_G shall be
+                 set to 2.
+                 The scale factor shall be coded as a 32-bit unsigned integer. Both a(i) and b(i) shall be coded as
+                 32-bit 2's complement signed integers. The value of UER(i* UER_G*Df) shall be defined as:
+                 UER(i* UER_G*Df) = (scale/2^31)*(a(i)+j*b(i))/2^31. In order to maximize precision, the scale factor
+                 shall be chosen such that max(|a(i)|, |b(i)|) over all i is equal to 2^31-1.
+                 NOTE - This data format supports an UER(f) granularity of 2^(-31) and an UER(f) dynamic range of
+                 approximately +6 dB to -186 dB, however it does not imply any future accuracy requirements.
+                 An UER(i*UER_G* Df) value indicated as a(i) = b(i) = -2^31 is a special value. It indicates that no
+                 measurement could be done for this subcarrier either because it is not supported by the SELT-PMD
+                 function, or that the value is out of range to be represented.
+                "
+            ::= { hwXdslSeltTestEntry 65541 }
+
+
+        hwXdslSeltTestParamUnCalibEchoRespImgSegment2 OBJECT-TYPE
+            SYNTAX      OCTET STRING(SIZE(0..8192))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The uncalibrated echo response, UER(i* UER_G*Df), shall be represented in linear format by a
+                 scale factor and a normalized complex number a(i)+j*b(i), where i is a frequency index i ranging
+                 from 0 to NSC-1, the subcarrier spacing, Df = 4.3125 kHz, and (NSC-1)*UER_G*Df is the
+                 highest frequency supported by the SELT-PMD functionality. The UER granularity parameter,
+                 UER_G, has two valid values: 1 and 2, indicating whether the measurements were performed using
+                 a tone spacing of 4.3125 kHz or of 8.625 kHz. If the uncalibrated echo response is being reported
+                 over a frequency range of 17.664 MHz or lower, UER_G shall be set to 1. If the uncalibrated echo
+                 response is being reported over a frequency range that is greater than 17.664 MHz, UER_G shall be
+                 set to 2.
+                 The scale factor shall be coded as a 32-bit unsigned integer. Both a(i) and b(i) shall be coded as
+                 32-bit 2's complement signed integers. The value of UER(i* UER_G*Df) shall be defined as:
+                 UER(i* UER_G*Df) = (scale/2^31)*(a(i)+j*b(i))/2^31. In order to maximize precision, the scale factor
+                 shall be chosen such that max(|a(i)|, |b(i)|) over all i is equal to 2^31-1.
+                 NOTE - This data format supports an UER(f) granularity of 2^(-31) and an UER(f) dynamic range of
+                 approximately +6 dB to -186 dB, however it does not imply any future accuracy requirements.
+                 An UER(i*UER_G* Df) value indicated as a(i) = b(i) = -2^31 is a special value. It indicates that no
+                 measurement could be done for this subcarrier either because it is not supported by the SELT-PMD
+                 function, or that the value is out of range to be represented.
+                "
+            ::= { hwXdslSeltTestEntry 65542 }
+
+        hwXdslSeltTestParamQlnGroupSize  OBJECT-TYPE
+            SYNTAX      Unsigned32(1 | 4294967295)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Number of QLN(quiet line noise) per group.
+ 	         The scale value is 1 or 4294967295.4294967295 is invalid value.
+                "
+            ::= { hwXdslSeltTestEntry 65548 }
+
+        hwXdslSeltTestParamQmeC OBJECT-TYPE
+            SYNTAX      INTEGER
+            {
+            enable(1),
+            disable(2),
+            invalid(-1)
+            }
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+              "The status of QLN capture switch.
+               Options:
+               1. enable(1)       - Enable QLN capture switch
+    	       2. disable(2)      - Disable QLN capture switch
+    	       3. invalid(-1)     - Invalid value
+              "
+            ::= { hwXdslSeltTestEntry 65549 }
+
+        hwXdslSeltTestParamUmeC OBJECT-TYPE
+            SYNTAX      INTEGER
+            {
+            enable(1),
+            disable(2),
+            invalid(-1)
+            }
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+              "The status of UER capture switch.
+               Options:
+               1. enable(1)       - Enable UER capture switch
+    	       2. disable(2)      - Disable UER capture switch
+    	       3. invalid(-1)     - Invalid value
+              "
+            ::= { hwXdslSeltTestEntry 65550 }
+
+       hwXdslSeltTestParaVarUerC OBJECT-TYPE
+            SYNTAX      OCTET STRING(SIZE(0..8192))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The relative variance of the uncalibrated echo response REL_VAR_UER(i* UER_G *Df) shall be
+                 represented as an 8-bit unsigned integer v(i), where i is the subcarrier index i = 0 to NSC-1. The
+                 value of REL_VAR_UER(i* UER_G *Df) shall be defined as REL_VAR_UER(i* UER_G *Df) = 3 - v(i)/2 dB.
+                 The number v(i) is an 8-bit unsigned integer in the range 0 to 254.
+                 This data format supports a REL_VAR_UER(i) over a range from -124 dB to +3 dB for each carrier with a granularity from 0.5 dB.
+                 Out of range values shall be clamped to the closest range bound.
+                 The special value v(i) = 255 indicates that no measurement is available for that carrier.
+                 Unit: 0.5dB
+                "
+            ::= { hwXdslSeltTestEntry 65551 }
+
+        hwXdslSeltTestParaUerMmdC OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+            	"This parameter is the maximum allowed time for SELT uncalibrated echo response measurement,
+             	 between the time of the start command written by the SELT-PMD-ME, and the time the result is
+             	 available for read operation by SELT-PMD-ME.
+             	 It is configurable between 5 seconds and 240 seconds, in steps of 1 second, Invalid value is 0xff.
+             	 Unit: 1 second
+            	"
+            ::= { hwXdslSeltTestEntry 65552 }
+
+        hwXdslSeltTestParaQlnMmdC OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+            	"This parameter is the maximum allowed time for SELT quiet line noise measurement, between the
+                 time of the start command written by the SELT-PMD-ME, and the time the result is available for
+                 read operation by SELT-PMD-ME.
+                 It is configurable between 1 second and 240 seconds, in steps of 1 second. Invalid value is 0xff.
+                 Unit: 1 second
+            	"
+            ::= { hwXdslSeltTestEntry 65553 }
+
+        hwXdslSeltTestParaUerStatus OBJECT-TYPE
+            SYNTAX      INTEGER{off(1), running(2),completed(3),failed(4)}
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+            	"UerStatus.
+		 Options:
+		 1.off(1)             - The status is off.
+		 2.running(2)         - The status is running.
+		 3.completed(3)       - The status is completed.
+		 4.failed(4)          - The status is failed.
+            	"
+            ::= { hwXdslSeltTestEntry 65554 }
+
+        hwXdslSeltTestParaQlnStatus OBJECT-TYPE
+            SYNTAX      INTEGER{off(1), running(2),completed(3),failed(4)}
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+            	"QlnStatus.
+		 Options:
+		 1.off(1)             - The status is off.
+		 2.running(2)         - The status is running.
+		 3.completed(3)       - The status is completed.
+		 4.failed(4)          - The status is failed.
+            	"
+            ::= { hwXdslSeltTestEntry 65555 }
+
+       hwXdslSeltTestParamCalcEnable OBJECT-TYPE
+            SYNTAX      INTEGER
+            {
+            enable(1),
+            disable(2),
+            invalid(-1)
+            }
+            MAX-ACCESS  read-write
+            STATUS      current
+            DESCRIPTION
+               "The status of calculation switch.
+                Options:
+                1. enable(1)       - Enable calculation switch
+    	        2. disable(2)      - Disable calculation switch
+    	        3. invalid(-1)     - Invalid value
+    	        Default: enable(1)
+               "
+            DEFVAL { enable }
+            ::= { hwXdslSeltTestEntry 65556 }
+
+--          hwXdslSeltTestLevelTable
+       hwXdslSeltTestLevelTable  OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwXdslSeltTestLevelEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "This table supports the configuration of xdsl selt level.
+                 The indexes of this table are hwFrameIndex and hwSlotIndex."
+            ::= { hwXdslTest 2 }
+
+        hwXdslSeltTestLevelEntry  OBJECT-TYPE
+            SYNTAX          HwXdslSeltTestLevelEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "This table supports the configuration of xdsl selt level.
+                 The indexes of this entry are hwFrameIndex and hwSlotIndex."
+            INDEX {
+              hwFrameIndex,
+              hwSlotIndex
+            }
+            ::= { hwXdslSeltTestLevelTable 1 }
+
+        HwXdslSeltTestLevelEntry ::=
+            SEQUENCE{
+                hwXdslSeltLevel       	    Integer32
+            }
+
+    hwXdslSeltLevel  OBJECT-TYPE
+      SYNTAX Integer32 (-1 | 1..4)
+      MAX-ACCESS read-write
+      STATUS current
+      DESCRIPTION
+        "The level of xdsl SELT:
+ 	 1  Level0;
+ 	 2  Level1;
+ 	 3  Level2;
+ 	 4  Level3.
+ 	 A special value of -1 indicates the level of xdsl SELT is invalid.
+        "
+      ::= { hwXdslSeltTestLevelEntry 1 }
+
+--          hwXdslSeltCalibrationTable
+    hwXdslSeltCalibrationTable  OBJECT-TYPE
+            SYNTAX          SEQUENCE OF HwXdslSeltCalibrationEntry
+            MAX-ACCESS      not-accessible
+            STATUS          current
+            DESCRIPTION
+                "This table describes calibration data of selt test.
+                 The index of this table is ifIndex.
+                "
+            ::= { hwXdslTest 3 }
+
+    hwXdslSeltCalibrationEntry   OBJECT-TYPE
+        SYNTAX          HwXdslSeltCalibrationEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION
+            "This table describes calibration data of selt test.
+             The index of this entry is ifIndex.
+            "
+        INDEX
+            {
+            ifIndex
+            }
+        ::= { hwXdslSeltCalibrationTable 1 }
+
+    HwXdslSeltCalibrationEntry ::=
+        SEQUENCE
+            {
+            hwXdslSeltCalibrationInvVendorId  OCTET STRING,
+            hwXdslSeltCalibrationDataSegment1 OCTET STRING,
+            hwXdslSeltCalibrationDataSegment2 OCTET STRING
+            }
+
+    hwXdslSeltCalibrationInvVendorId OBJECT-TYPE
+        SYNTAX      OCTET STRING  (SIZE(8))
+        MAX-ACCESS  read-only
+        STATUS       current
+        DESCRIPTION
+            "It consists of 8 binary octets, including a
+             provider code.
+            "
+        ::= { hwXdslSeltCalibrationEntry 1 }
+
+    hwXdslSeltCalibrationDataSegment1 OBJECT-TYPE
+        SYNTAX      OCTET STRING(SIZE(0..8192))
+        MAX-ACCESS  read-only
+        STATUS      current
+        DESCRIPTION
+            "The part 1 of selt calibration data.
+             The unit of selt calibration data is 0.00001.
+            "
+        ::= { hwXdslSeltCalibrationEntry 2 }
+
+    hwXdslSeltCalibrationDataSegment2 OBJECT-TYPE
+        SYNTAX      OCTET STRING(SIZE(0..8192))
+        MAX-ACCESS  read-only
+        STATUS      current
+        DESCRIPTION
+            "The part 2 of selt calibration data.
+             The unit of selt calibration data is 0.00001.
+            "
+        ::= { hwXdslSeltCalibrationEntry 3 }
+
+    END

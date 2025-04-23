@@ -1,0 +1,2212 @@
+-- ============================================================================
+-- Copyright (C) 2015 by  HUAWEI TECHNOLOGIES. All rights reserved.
+-- Description:  This MIB is used for defining Huawei's VDSL2NNI management MIB objects.
+-- Reference:  
+-- Version: V1.01
+-- ============================================================================
+
+	HUAWEI-VDSL2NNI-MIB DEFINITIONS ::= BEGIN
+
+	IMPORTS
+            MODULE-IDENTITY, OBJECT-TYPE, Unsigned32, NOTIFICATION-TYPE,
+            Integer32, Counter32, Counter64                
+               FROM SNMPv2-SMI           
+            huaweiUtility			
+              FROM HUAWEI-MIB      
+            ifIndex
+               FROM IF-MIB
+            TruthValue, DateAndTime,  RowStatus, TEXTUAL-CONVENTION
+               FROM SNMPv2-TC                        
+            HwXdslUnit,
+            HwXdslDirection,
+            HwXdslTransmissionModeType,
+            HwXdslRaMode,
+            HwXdslInitResult,
+            HwXdslOperationModes,
+            HwXdslPowerMngState,
+            HwXdslBandPlan,
+            HwXdslLastTransmittedState,
+            HwXdslLineStatus,
+            HwXdslChAtmStatus,
+            HwXdslChPtmStatus,
+            HwXdslSubProfiles,
+            HwXdslTIPsdClassMask,
+            HwXdslPsdLimitMask,
+            HwXdslStatusRtxUsed,      
+            HwXdslActmode            
+               FROM   HUAWEI-XDSL-LINE-TC-MIB       -- [This document]
+            MODULE-COMPLIANCE, OBJECT-GROUP, NOTIFICATION-GROUP
+               FROM SNMPv2-CONF;			
+
+	hwVdsl2nniMIB MODULE-IDENTITY
+	        LAST-UPDATED "201501290000Z" 
+	        ORGANIZATION
+             	    "Huawei Technologies Co.,Ltd."
+                CONTACT-INFO
+                         "Huawei Industrial Base                
+                          Bantian, Longgang                     
+                          Shenzhen 518129                       
+                          People's Republic of China            
+                          Website: http://www.huawei.com        
+                          Email: support@huawei.com             
+                         "   
+	        DESCRIPTION  "This MIB is used for defining Huawei's VDSL2NNI management MIB objects."
+	        
+	  --  Revision history
+	        REVISION     "201501290000Z"
+	        DESCRIPTION  "V1.01, changes in this revision:
+                        Modify the type name of these leaf nodes:
+                        hwVdsl2nniChStatusAtmStatus,
+                        hwVdsl2nniChStatusPtmStatus,
+                        hwVdsl2nniChStatusUnit,
+                        hwVdsl2nniLInvTransmissionCapabilities,
+                        hwVdsl2nniLInvUnit,
+                        hwVdsl2nniLineActmode,
+                        hwVdsl2nniLineBandPlan,
+                        hwVdsl2nniLineCurrentVdsl2Profile,
+                        hwVdsl2nniLinePsdMaskClassSelection,
+                        hwVdsl2nniLineStatusInitResult,
+                        hwVdsl2nniLineStatusLastStateDs,
+                        hwVdsl2nniLineStatusLastStateUs,
+                        hwVdsl2nniLineStatusPwrMngState,
+                        hwVdsl2nniLineStatusRtxUsedDs,
+                        hwVdsl2nniLineStatusRtxUsedUs,
+                        hwVdsl2nniLineStatusXtuc,
+                        hwVdsl2nniLineStatusXtur,
+                        hwVdsl2nniPMChCurrUnit,
+                        hwVdsl2nniPMLCurrUnit,
+                        hwVdsl2nniPrivSCStatusDirection."
+
+	        REVISION     "201304220000Z" 
+	        DESCRIPTION  "V1.00, Initial version."
+	        
+		::= { huaweiUtility 183 }		
+                                            
+	hwVdsl2nni	                OBJECT IDENTIFIER ::= { hwVdsl2nniMIB 1 }
+	hwVdsl2nniCfg			OBJECT IDENTIFIER ::= { hwVdsl2nni 1 }
+	hwVdsl2nniStatistics		OBJECT IDENTIFIER ::= { hwVdsl2nni 2 } 
+	hwVdsl2nniPerStatis              OBJECT IDENTIFIER ::= { hwVdsl2nni 3 }
+	hwVdsl2nniPMLine                 OBJECT IDENTIFIER ::= { hwVdsl2nniPerStatis 1 }
+        hwVdsl2nniPMChannel              OBJECT IDENTIFIER ::= { hwVdsl2nniPerStatis 2 }
+        
+-- vdsl2LineInventoryTable
+
+       hwVdsl2nniInventoryTable  OBJECT-TYPE
+            SYNTAX      SEQUENCE  OF  HwVdsl2nniInventoryEntry
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The table hwVdsl2nniInventoryTable contains inventory of VDSL2NNI
+                 unit. The indexes of this table are ifIndex and hwVdsl2nniLInvUnit.
+                "
+            ::= { hwVdsl2nniCfg 1 }
+            
+        hwVdsl2nniInventoryEntry  OBJECT-TYPE
+            SYNTAX      HwVdsl2nniInventoryEntry
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The table hwVdsl2nniInventoryTable contains inventory of VDSL2NNI
+                 unit. The indexes of this entry are ifIndex and hwVdsl2nniLInvUnit.
+                "
+            INDEX  { ifIndex, hwVdsl2nniLInvUnit }
+            ::= { hwVdsl2nniInventoryTable 1 }
+        
+        HwVdsl2nniInventoryEntry  ::=
+           SEQUENCE {
+              hwVdsl2nniLInvUnit                      HwXdslUnit,
+              hwVdsl2nniLInvG994VendorId              OCTET STRING,
+              hwVdsl2nniLInvSystemVendorId            OCTET STRING,
+              hwVdsl2nniLInvVersionNumber             OCTET STRING,
+              hwVdsl2nniLInvSerialNumber              OCTET STRING,
+              hwVdsl2nniLInvSelfTestResult            Unsigned32,
+              hwVdsl2nniLInvTransmissionCapabilities  HwXdslTransmissionModeType,
+              hwVdsl2nniLInvModelId	              OCTET STRING
+           }
+        
+        hwVdsl2nniLInvUnit  OBJECT-TYPE
+            SYNTAX      HwXdslUnit
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The termination unit XTUC{1} or XTUR{2}."            
+            ::= { hwVdsl2nniInventoryEntry 1 }
+            
+        hwVdsl2nniLInvG994VendorId  OBJECT-TYPE
+            SYNTAX      OCTET STRING  (SIZE(0..8))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The xTU G.994.1 Vendor ID as inserted in the G.994.1 CL/CLR
+                 message.  It consists of 8 binary octets, including a country
+                 code followed by a (regionally allocated) provider code, as
+                 defined in Recommendation T.35.
+                "
+            REFERENCE    "ITU-T G.997.1(200604), paragraph 7.4"
+            ::= { hwVdsl2nniInventoryEntry 2 }
+        
+        hwVdsl2nniLInvSystemVendorId  OBJECT-TYPE
+            SYNTAX      OCTET STRING  (SIZE(0..8))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The xTU System Vendor ID (identifies the xTU system
+                 integrator) as inserted in the Overhead Messages (both xTUs
+                 for G.992.3 and G.992.4) or in the Embedded Operations
+                 Channel (only xTU-R in G.992.1 and G.992.2).  It consists of
+                 8 binary octets, with same format as used for
+                 Vdsl2InvG994VendorId.
+                "
+            REFERENCE    "ITU-T G.997.1(200604), paragraph 7.4"
+            ::= { hwVdsl2nniInventoryEntry 3 }
+        
+        hwVdsl2nniLInvVersionNumber  OBJECT-TYPE
+            SYNTAX      OCTET STRING  (SIZE(0..16))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The xTU version number (vendor specific information) as
+                 inserted in the Overhead Messages (both xTUs for G.992.3 and
+                 G.992.4) or in the Embedded Operations Channel (only xTU-R in
+                 G.992.1 and G.992.2).  It consists of up to 16 binary octets.
+                "
+            REFERENCE    "ITU-T G.997.1(200604), paragraph 7.4"
+            ::= { hwVdsl2nniInventoryEntry 4 }
+        
+        hwVdsl2nniLInvSerialNumber  OBJECT-TYPE
+            SYNTAX      OCTET STRING  (SIZE(0..32))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The xTU serial number (vendor specific information) as
+                 inserted in the Overhead Messages (both xTUs for G.992.3 and
+                 G.992.4) or in the Embedded Operations Channel (only xTU-R in
+                 G.992.1 and G.992.2).  It is vendor specific information.  It
+                 consists of up to 32 ASCII characters.
+                "
+            REFERENCE    "ITU-T G.997.1(200604), paragraph 7.4"
+            ::= { hwVdsl2nniInventoryEntry 5 }
+        
+        hwVdsl2nniLInvSelfTestResult  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The xTU self-test result, coded as a 32-bit integer.  The
+                 most significant octet of this object is '0' if the self-test
+                 passed, and '1' if the self-test failed.  The interpretation
+                 of the other octets is vendor discretionary.
+                "
+            REFERENCE    "ITU-T G.997.1(200604), paragraph 7.4"
+            ::= { hwVdsl2nniInventoryEntry 6 }
+        
+        hwVdsl2nniLInvTransmissionCapabilities  OBJECT-TYPE
+            SYNTAX      HwXdslTransmissionModeType
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The xTU transmission system capability list of the different
+                 coding types.  It is coded in a bit-map representation with 1
+                 or more bits set.  A bit set to '1' means that the xTU
+                 supports the respective coding.  The value may be derived
+                 from the handshaking procedures defined in G.994.1.  A set
+                 of VDSL2 line transmission modes, with one bit per mode.
+                "
+            REFERENCE    "ITU-T G.997.1(200604), paragraph 7.4"
+            ::= { hwVdsl2nniInventoryEntry 7 }      
+             
+        hwVdsl2nniLInvModelId  OBJECT-TYPE
+            SYNTAX      OCTET STRING  (SIZE(0..32))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The XTU model ID."
+            ::= { hwVdsl2nniInventoryEntry 8 }  
+            
+	--  hwVdsl2nniLineTable              
+	
+        hwVdsl2nniLineTable  OBJECT-TYPE
+            SYNTAX      SEQUENCE  OF  HwVdsl2nniLineEntry
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The table hwVdsl2nniLineTable contains configuration,
+                 command and status parameters of the VDSL2NNI line.
+                 The index of this table is ifIndex.
+                "
+            ::= { hwVdsl2nniCfg 2 }
+        
+        hwVdsl2nniLineEntry  OBJECT-TYPE
+            SYNTAX      HwVdsl2nniLineEntry
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The table hwVdsl2nniLineTable contains configuration,
+                 command and status parameters of the VDSL2NNI line.
+                 The index of this entry is ifIndex.
+                "
+            INDEX  { ifIndex }
+            ::= { hwVdsl2nniLineTable 1 }
+        
+        HwVdsl2nniLineEntry  ::=
+            SEQUENCE {
+              hwVdsl2nniLineStatusXtuTransSys       Unsigned32,
+              hwVdsl2nniLineStatusPwrMngState       HwXdslPowerMngState,
+              hwVdsl2nniLineStatusInitResult        HwXdslInitResult,
+              hwVdsl2nniLineStatusLastStateDs       HwXdslLastTransmittedState,
+              hwVdsl2nniLineStatusLastStateUs       HwXdslLastTransmittedState,
+              hwVdsl2nniLineStatusXtur              HwXdslLineStatus,
+              hwVdsl2nniLineStatusXtuc              HwXdslLineStatus,
+              hwVdsl2nniLineStatusLnAttenDs         Unsigned32,
+              hwVdsl2nniLineStatusLnAttenUs         Unsigned32,
+              hwVdsl2nniLineStatusSigAttenDs        Unsigned32,
+              hwVdsl2nniLineStatusSigAttenUs        Unsigned32,
+              hwVdsl2nniLineStatusSnrMarginDs       Integer32,
+              hwVdsl2nniLineStatusSnrMarginUs       Integer32,
+              hwVdsl2nniLineStatusAttainableRateDs  Unsigned32,
+              hwVdsl2nniLineStatusAttainableRateUs  Unsigned32,
+              hwVdsl2nniLineStatusActPsdDs          Integer32,
+              hwVdsl2nniLineStatusActPsdUs          Integer32,
+              hwVdsl2nniLineStatusActAtpDs          Integer32,
+              hwVdsl2nniLineStatusActAtpUs          Integer32,
+              hwVdsl2nniLineBandPlan                HwXdslBandPlan,
+              hwVdsl2nniLinePsdMaskClassSelection   HwXdslTIPsdClassMask,
+              hwVdsl2nniLineCurrentVdsl2Profile     HwXdslSubProfiles,
+              hwVdsl2nniUpboProfKl0CpeVal	       Unsigned32,
+              hwVdsl2nniLineStatusCodingGainDs      Unsigned32,
+              hwVdsl2nniLineStatusCodingGainUs      Unsigned32,
+              hwVdsl2nniLineStatusPcbDs             Unsigned32,      
+              hwVdsl2nniLineActmode                 HwXdslActmode,
+              hwVdsl2nniUpboProfKl0CoVal	    Unsigned32,
+              hwVdsl2nniLineStatusRtxUsedDs         HwXdslStatusRtxUsed,
+              hwVdsl2nniLineStatusRtxUsedUs         HwXdslStatusRtxUsed,
+              hwVdsl2nniLineStatusLastRetrainInfo   INTEGER,
+              hwVdsl2nniUpboRxThreshDs              Integer32,
+              hwVdsl2nniUpboRxThreshUs              Integer32,
+              hwVdsl2nniLineStatusLineRateDs        Unsigned32,
+              hwVdsl2nniLineStatusLineRateUs        Unsigned32
+            }   
+        
+        hwVdsl2nniLineStatusXtuTransSys  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The xTU Transmission System (XTS) in use.
+                 This parameter may be derived from the handshaking procedures
+                 defined in Recommendation G.994.1. The invalid value is 4294967295. 
+                 If data on the port is invalid or no data is generated on the 
+                 port because the port has not been activated, the invalid value 
+                 will be returned. One of VDSL2 line 
+                 transmission modes:
+                        ANSI_T1413(1)
+                        ETSI_DTS_TM06006(2)
+                        G9921_POTS_NONOVERLAP(3)
+                        G9921_POTS_OVERLAP(4)
+                        G9921_ISDN_NONOVERLAP(5)
+                        G9921_ISDN_OVERLAP(6)
+                        G9921_TCMISDN_NONOVERLAP(7)
+                        G9921_TCMISDN_OVERLAP(8)
+                        G9922_POTS_NONOVERLAP(9)
+                        G9922_POTS_OVERLAP(10)
+                        G9922_TCMISDN_NONOVERLAP(11)
+                        G9922_TCMISDN_OVERLAP(12)
+                        G9921_TCMISDN_SYMMETRIC(13)
+                        G9923_POTS_NONOVERLAP(19)
+                        G9923_POTS_OVERLAP(20)
+                        G9923_ISDN_NONOVERLAP(21)
+                        G9923_ISDN_OVERLAP(22)
+                        G9924_POTS_NONOVERLAP(25)
+                        G9924_POTS_OVERLAP(26)
+                        G9923_ANNEXI_ALLDIGI_NONOVERLAP(29)
+                        G9923_ANNEXI_ALLDIGI_OVERLAP(30)
+                        G9923_ANNEXJ_ALLDIGI_NONOVERLAP(31)
+                        G9923_ANNEXJ_ALLDIGI_OVERLAP(32)
+                        G9924_ANNEXI_ALLDIGI_NONOVERLAP(33)
+                        G9924_ANNEXI_ALLDIGI_OVERLAP(34)
+                        G9923_ANNEXL_POTS_NONOVERLAP_MODE1_WIDEUS(35)
+                        G9923_ANNEXL_POTS_NONOVERLAP_MODE2_NARROWUS(36)
+                        G9923_ANNEXL_POTS_OVERLAP_MODE3_WIDEUS(37)
+                        G9923_ANNEXL_POTS_NONOVERLAP_MODE4_NARROWUS(38)
+                        G9923_ANNEXM_POTS_NONOVERLAP(39)
+                        G9923_ANNEXM_POTS_OVERLAP(40)
+                        G9925_POTS_NONOVERLAP(41)
+                        G9925_POTS_OVERLAP(42)
+                        G9925_ISDN_NONOVERLAP(43)
+                        G9925_ISDN_OVERLAP(44)
+                        G9925_ANNEXI_ALLDIGI_NONOVERLAP(47)
+                        G9925_ANNEXI_ALLDIGI_OVERLAP(48)
+                        G9925_ANNEXJ_ALLDIGI_NONOVERLAP(49)
+                        G9925_ANNEXJ_ALLDIGI_OVERLAP(50)
+                        G9925_ANNEXM_POTS_NONOVERLAP(51)
+                        G9925_ANNEXM_POTS_OVERLAP(52)
+                        G9931(65)
+                        G9932_ANNEXA_POTS(73)
+                        G9932_ANNEXA_ISDN(74)
+                        G9932_ANNEXB_POTS(75)
+                        G9932_ANNEXB_ISDN(76)
+                        G9932_ANNEXC_POTS(77)
+                        G9932_ANNEXC_ISDN(78)
+                        G9935(79)
+                        G9935_FRIENDLY_DS(80)
+                        G9935_FULL_FRIENDLY(81)
+               "
+            ::= { hwVdsl2nniLineEntry 1 }
+        
+        hwVdsl2nniLineStatusPwrMngState  OBJECT-TYPE
+            SYNTAX      HwXdslPowerMngState
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The current power management state.  
+                 Options:
+                 1. L0 - Synchronized and full transmission 
+                 2. L1 - Low Power with reduced net data rate 
+                 3. L2 - Low Power with reduced net data rate 
+                 4. L3 - No power
+                 The various possible values are:l0(0), l1(1), l2(2), l3(3).
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.2"
+            ::= { hwVdsl2nniLineEntry 2 }
+        
+        hwVdsl2nniLineStatusInitResult  OBJECT-TYPE
+            SYNTAX      HwXdslInitResult
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates the result of the last full initialization performed
+                 on the line.                   
+                 Options:
+                 1. noFail (0)            - Successful initialization
+                 2. configError (1)       - Configuration failure
+                 3. configNotFeasible (2) - Configuration details not supported
+                 4. commFail (3)          - Communication failure
+                 5. noPeerXtu (4)         - Peer xTU not detected
+                 6. otherCause (5)        - Other initialization failure reason
+                 7. ginpNotSelected(6)    - G.998.4 Retransmission mode was not selected 
+                                            while RTX_MODE = FORCED or with RTX_MODE = RTX_TESTMODE
+                 8. invalidValue(-1)      - Invalid value
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.3"
+            ::= { hwVdsl2nniLineEntry 3 }
+        
+        hwVdsl2nniLineStatusLastStateDs  OBJECT-TYPE
+            SYNTAX      HwXdslLastTransmittedState
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The last successful transmitted initialization state in
+                 the downstream direction in the last full initialization
+                 performed on the line. States are per the specific VDSL type
+                 and are counted from 0 (if G.994.1 is used) or 1 (if G.994.1
+                 is not used) up to Showtime.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.4"
+            ::= { hwVdsl2nniLineEntry 4 }
+            
+        hwVdsl2nniLineStatusLastStateUs  OBJECT-TYPE
+            SYNTAX      HwXdslLastTransmittedState
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The last successful transmitted initialization state in the
+                 upstream direction in the last full initialization performed
+                 on the line.  States are per the specific VDSL type and are
+                 counted from 0 (if G.994.1 is used) or 1 (if G.994.1 is not
+                 used) up to Showtime.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.5"
+            ::= { hwVdsl2nniLineEntry 5 }
+            
+        hwVdsl2nniLineStatusXtur  OBJECT-TYPE
+            SYNTAX      HwXdslLineStatus
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates current state (existing failures) of the xTU-R.
+                 This is a bit-map of possible conditions.  The various bit
+                 positions are: noFailure(0), lossOfFraming(1),
+                 lossOfSignal(2), lossOfPower(3),
+                 initFailure(4) - never active on xTU-R
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.1.1.2"
+            ::= { hwVdsl2nniLineEntry 6 }
+        
+        hwVdsl2nniLineStatusXtuc  OBJECT-TYPE
+            SYNTAX      HwXdslLineStatus
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates current state (existing failures) of the xTU-C.
+                 This is a bit-map of possible conditions. This BITS structure can 
+                 report the following failures:
+                 1. noDefect (0)      - This bit position positively reports
+                                        that no defect or failure exist
+                 2. lossOfFraming (1) - Loss of frame synchronization
+                 3. lossOfSignal (2)  - Loss of signal
+                 4. lossOfPower (3)   - Loss of power.  Usually this failure may
+                                        be reported for CPE units only
+                 5. initFailure (4)   - Recent initialization process failed
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.1.1.1"
+            ::= { hwVdsl2nniLineEntry 7 }
+            
+        hwVdsl2nniLineStatusLnAttenDs  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "0.1 dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The measured difference in the total power transmitted by the
+                 xTU-C and the total power received by the xTU-R over all 
+                 sub-carriers during diagnostics mode and initialization. It
+                 ranges from 0 to 1270 units of 0.1 dB (Physical values
+                 are 0 to 127 dB). A value of all 1's indicates the line
+                 attenuation is out of range to be represented. The invalid value 
+                 is 4294967295. If data on the port is invalid or no data is 
+                 generated on the port because the port has not been activated, 
+                 the invalid value will be returned.
+                 Unit: 0.1 dB
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.6"
+            ::= { hwVdsl2nniLineEntry 8 }
+        
+        hwVdsl2nniLineStatusLnAttenUs  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "0.1 dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The measured difference in the total power transmitted by the
+                 xTU-R and the total power received by the xTU-C over all sub-
+                 carriers during diagnostics mode and initialization.
+                 It ranges from 0 to 1270 units of 0.1 dB (Physical values are
+                 0 to 127 dB).  A value of all 1's indicates the line
+                 attenuation is out of range to be represented. The invalid value 
+                 is 4294967295. If data on the port is invalid or no data is 
+                 generated on the port because the port has not been activated, 
+                 the invalid value will be returned.
+                 Unit: 0.1 dB
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.7"
+            ::= { hwVdsl2nniLineEntry 9 }
+        
+        hwVdsl2nniLineStatusSigAttenDs  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "0.1 dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The measured difference in the total power transmitted by the
+                 xTU-C and the total power received by the xTU-R over all sub-
+                 carriers during Showtime.  It ranges from 0 to 1270 units of
+                 0.1 dB (Physical values are 0 to 127 dB).  A value of all
+                 1's indicates the line attenuation is out of range to be
+                 represented. The invalid value is 4294967295. If data on the 
+                 port is invalid or no data is generated on the port because 
+                 the port has not been activated, the invalid value will be returned.
+                 Unit: 0.1 dB
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.8"
+            ::= { hwVdsl2nniLineEntry 10 }
+            
+        hwVdsl2nniLineStatusSigAttenUs  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "0.1 dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The measured difference in the total power transmitted by the
+                 xTU-R and the total power received by the xTU-C over all sub-
+                 carriers during Showtime.  It ranges from 0 to 1270 units of
+                 0.1 dB (Physical values are 0 to 127 dB).  A value of all
+                 1's indicates the line attenuation is out of range to be
+                 represented. The invalid value is 4294967295. If data on the 
+                 port is invalid or no data is generated on the port because 
+                 the port has not been activated, the invalid value will be returned.
+                 Unit: 0.1 dB
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.9"
+            ::= { hwVdsl2nniLineEntry 11 }
+        
+        hwVdsl2nniLineStatusSnrMarginDs  OBJECT-TYPE
+            SYNTAX      Integer32
+            UNITS       "0.1 dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Downstream SNR Margin is the maximum increase in dB of the
+                 noise power received at the xTU-R, such that the BER
+                 requirements are met for all downstream bearer channels.  It
+                 ranges from -640 to 630 units of 0.1 dB (Physical values are
+                 -64 to 63 dB).  A value of 0x7FFFFFFF(2147483647) indicates the line
+                 attenuation is out of range to be represented. The invalid 
+                 value is 2147483647. If data on the port is invalid or no data 
+                 is generated on the port because the port has not been activated, 
+                 the invalid value will be returned.
+                 Unit: 0.1 dB
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.10"
+            ::= { hwVdsl2nniLineEntry 12 }
+        
+        hwVdsl2nniLineStatusSnrMarginUs  OBJECT-TYPE
+            SYNTAX      Integer32
+            UNITS       "0.1 dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Upstream SNR Margin is the maximum increase in dB of the noise
+                 power received at the xTU-C, such that the BER requirements
+                 are met for all downstream bearer channels.  It ranges from
+                 -640 to 630 units of 0.1 dB (Physical values are -64 to
+                 63 dB).  A value of 0x7FFFFFFF(2147483647) indicates the line attenuation
+                 is out of range to be represented. The invalid value is 2147483647. 
+                 If data on the port is invalid or no data is generated on 
+                 the port because the port has not been activated, the 
+                 invalid value will be returned.
+                 Unit: 0.1 dB
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.11"
+            ::= { hwVdsl2nniLineEntry 13 }
+            
+        hwVdsl2nniLineStatusAttainableRateDs  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "bits/second"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Maximum Attainable Data Rate Downstream.
+                 The maximum downstream net data rate currently attainable by
+                 the xTU-C transmitter and the xTU-R receiver, coded in bit/s.
+                 The invalid value is 4294967295. If data on the port is invalid 
+                 or no data is generated on the port because the port has not 
+                 been activated, the invalid value will be returned.
+                 Unit: bits/second
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.12"
+            ::= { hwVdsl2nniLineEntry 14 }
+        
+        hwVdsl2nniLineStatusAttainableRateUs  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "bits/second"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Maximum Attainable Data Rate Upstream.
+                 The maximum upstream net data rate currently attainable by the
+                 xTU-R transmitter and the xTU-C receiver, coded in bit/s.
+                 The invalid value is 4294967295. If data on the port is invalid 
+                 or no data is generated on the port because the port has not 
+                 been activated, the invalid value will be returned.
+                 Unit: bits/second
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.13"
+            ::= { hwVdsl2nniLineEntry 15 }
+        
+        hwVdsl2nniLineStatusActPsdDs OBJECT-TYPE
+            SYNTAX      Integer32
+            UNITS       "0.1 dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Actual Power Spectrum Density (PSD) Downstream.  The average
+                 downstream transmit PSD over the sub-carriers used for
+                 downstream.  It ranges from -900 to 0 units of 0.1 dB
+                 (Physical values are -90 to 0 dBm/Hz).  A value of 0x7FFFFFFF(2147483647)
+                 indicates the measurement is out of range to be represented.
+                 The invalid value is 2147483647. If data on the port is invalid 
+                 or no data is generated on the port because the port has not 
+                 been activated, the invalid value will be returned.
+                 Unit: 0.1 dB
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.14"
+            ::= { hwVdsl2nniLineEntry 16 }
+        
+        hwVdsl2nniLineStatusActPsdUs OBJECT-TYPE
+            SYNTAX      Integer32
+            UNITS       "0.1 dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Actual Power Spectrum Density (PSD) Upstream.  The average
+                 upstream transmit PSD over the sub-carriers used for upstream.
+                 It ranges from -900 to 0 units of 0.1 dB (Physical values
+                 are -90 to 0 dBm/Hz).  A value of 0x7FFFFFFF(2147483647) indicates the
+                 measurement is out of range to be represented. The invalid value 
+                 is 2147483647. If data on the port is invalid or no data is 
+                 generated on the port because the port has not been activated, 
+                 the invalid value will be returned.
+                 Unit: 0.1 dB
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.15"
+            ::= { hwVdsl2nniLineEntry 17 }
+        
+        hwVdsl2nniLineStatusActAtpDs  OBJECT-TYPE
+            SYNTAX      Integer32
+            UNITS       "0.1 dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Actual Aggregate Transmit Power Downstream.  The total amount
+                 of transmit power delivered by the xTU-C at the U-C reference
+                 point, at the instant of measurement.  It ranges from -310 to
+                 310 units of 0.1 dB (Physical values are -31 to 31 dBm).  A
+                 value of 0x7FFFFFFF(2147483647) indicates the measurement is out of range to
+                 be represented. The invalid value is 2147483647. If data on the
+                 port is invalid or no data is generated on the port because 
+                 the port has not been activated, the invalid value will be returned.
+                 Unit: 0.1 dB
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.16"
+            ::= { hwVdsl2nniLineEntry 18 }
+        
+        hwVdsl2nniLineStatusActAtpUs  OBJECT-TYPE
+            SYNTAX      Integer32
+            UNITS       "0.1 dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Actual Aggregate Transmit Power Upstream.  The total amount of
+                 transmit power delivered by the xTU-R at the U-R
+                 reference point, at the instant of measurement.  It ranges
+                 from -310 to 310 units of 0.1 dB (Physical values are -31
+                 to 31 dBm).  A value of 0x7FFFFFFF(2147483647) indicates the measurement
+                 is out of range to be represented.
+                 Unit: 0.1 dB
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.17"
+            ::= { hwVdsl2nniLineEntry 19 }   
+            
+        hwVdsl2nniLineBandPlan  OBJECT-TYPE
+            SYNTAX      HwXdslBandPlan
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Band contains a series of subcarriers. 
+                 The first octet is the number of bands. Other octets describe the info of 
+                 each band.
+                 Each band info is a pair of values occupying 4 octets with the
+        	     following structure:    	 
+        	     First octets        - serial number of band
+        	     Second octets       - Direction of band
+        	     Third fourth octets - Start index of band
+        	     Fifth sixth octets  - End index of band
+                 Huawei defined.
+                "
+            ::= { hwVdsl2nniLineEntry 20 } 
+        
+        hwVdsl2nniLinePsdMaskClassSelection  OBJECT-TYPE
+            SYNTAX      HwXdslTIPsdClassMask
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The sub class of VDSL2 PSD Mask."
+            REFERENCE    "ITU-T G.997.1, paragraph 7.3.1.1.12"
+            ::= { hwVdsl2nniLineEntry 21 } 
+        
+        hwVdsl2nniLineCurrentVdsl2Profile  OBJECT-TYPE
+            SYNTAX      HwXdslSubProfiles
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "This configuration parameter contains the G.993.2 profiles 
+                 to be allowed by the near-end xTU on this line.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.3.1.1.11"
+            ::= { hwVdsl2nniLineEntry 22 } 
+          
+        hwVdsl2nniUpboProfKl0CpeVal  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "0.1dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The actual value of KL0_CPE parameter,it ranges
+                 from 0 to 1280 units of 0.1 dB. The invalid value is 4294967295. 
+                 If data on the port cannot be queried, data on the port is invalid, 
+                 or no data is generated on the port because the port has not been 
+                 activated, the invalid value will be returned.
+                 Unit: 0.1dB
+                "
+            ::= { hwVdsl2nniLineEntry 23 }
+          
+        hwVdsl2nniLineStatusCodingGainDs  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "0.5dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The actual value of Coding gain downstream parameter,it ranges
+                 from 0 to 16 units of 0.5 dB. The invalid value is 4294967295. 
+                 If data on the port cannot be queried, data on the port is invalid, 
+                 or no data is generated on the port because the port has not 
+                 been activated, the invalid value will be returned.
+                 Unit: 0.5dB
+                "
+            ::= { hwVdsl2nniLineEntry 24 }
+        
+        hwVdsl2nniLineStatusCodingGainUs  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "0.5dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The actual value of Coding gain upstream parameter,it ranges
+                 from 0 to 16 units of 0.5 dB. The invalid value is 4294967295. 
+                 If data on the port cannot be queried, data on the port is invalid, 
+                 or no data is generated on the port because the port has not 
+                 been activated, the invalid value will be returned.
+                 Unit: 0.5dB
+                "
+            ::= { hwVdsl2nniLineEntry 25 }      
+        
+        hwVdsl2nniLineStatusPcbDs  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "1dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The actual value of power cut back downstream parameter,
+                 it ranges from 0 to 40 units of 1 dB. The invalid value 
+                 is 4294967295. If data on the port cannot be queried, 
+                 data on the port is invalid, or no data is generated on the 
+                 port because the port has not been activated, the invalid 
+                 value will be returned.
+                 Unit: 1dB
+                "
+            ::= { hwVdsl2nniLineEntry 26 }
+        
+        hwVdsl2nniLineActmode  OBJECT-TYPE
+            SYNTAX      HwXdslActmode
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Actived mode after training between co and cpe.
+                 Options:
+                 1. ADSL(1)          - ETSI,T1.413 G992.1,G992.2
+                 2. ADSL2(2)         - G992.3,G992.4
+                 3. ADSL2PLUS(3)     - G992.5
+                 4. VDSL(4)          - G993.1
+                 5. VDSL2(5)         - G993.2,G993.5
+                 6. invalidValue(-1) - Invalid value
+                "
+            ::= { hwVdsl2nniLineEntry 27 }    
+          
+        hwVdsl2nniUpboProfKl0CoVal  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "0.1dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The actual value of KL0_CO parameter, it ranges
+                 from 0 to 1280 units of 0.1 dB. The invalid value 
+                 is 4294967295. If data on the port cannot be queried, 
+                 data on the port is invalid, or no data is generated 
+                 on the port because the port has not been activated, 
+                 the invalid value will be returned.
+                 Unit: 0.1dB
+                "
+            ::= { hwVdsl2nniLineEntry 28 }  
+            
+        hwVdsl2nniLineStatusRtxUsedDs  OBJECT-TYPE
+            SYNTAX      HwXdslStatusRtxUsed
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "This parameter specifies whether G.998.4 retransmission 
+                 is used in downstream.
+                 Options:
+                 1. rtxInuse(1)                             - RTX in use
+                 2. rtxUnusedModeForbidden(2)               - RTX not in use, due to RTX_MODE = FORBIDDEN
+                 3. rtxUnusedNotSupportedXtuc(3)            - RTX not in use, due to not supported by the XTU-C
+                 4. rtxUnusedNotSupportedXtur(4)            - RTX not in use, due to not supported by the XTU-R
+                 5. rtxUnusedNotSupportedXtucAndXtur(5)     - RTX not in use, due to not supported by the XTU-C and XTU-R
+                 6. invalidValue(-1)                        - Invalid value
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.38"    
+            ::= { hwVdsl2nniLineEntry 29 } 
+            
+            
+        hwVdsl2nniLineStatusRtxUsedUs  OBJECT-TYPE
+            SYNTAX      HwXdslStatusRtxUsed
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "This parameter specifies whether G.998.4 retransmission 
+                 is used in upstream. 
+                 Options:
+                 1. rtxInuse(1)                             - RTX in use
+                 2. rtxUnusedModeForbidden(2)               - RTX not in use, due to RTX_MODE = FORBIDDEN
+                 3. rtxUnusedNotSupportedXtuc(3)            - RTX not in use, due to not supported by the XTU-C
+                 4. rtxUnusedNotSupportedXtur(4)            - RTX not in use, due to not supported by the XTU-R
+                 5. rtxUnusedNotSupportedXtucAndXtur(5)     - RTX not in use, due to not supported by the XTU-C and XTU-R
+                 6. invalidValue(-1)                        - Invalid value
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.38"        
+            ::= { hwVdsl2nniLineEntry 30 } 
+            
+        hwVdsl2nniLineStatusLastRetrainInfo  OBJECT-TYPE               
+            SYNTAX INTEGER 
+                {
+                 none(1),
+                 cpeL3Trigger(2),
+                 lomUsTriggerDra(3),
+                 lomDsTriggerDra(4),
+                 cpeNeverAnswerOam(5),
+                 cpeNoMoreAnswerOam(6),
+                 persistentNcdUs(7),
+                 persistentNcdDs(8),
+                 persistentLcdUs(9),
+                 persistentLcdDs(10),
+                 l2ProblemCoDrop(11),
+                 l2ProblemCpeDrop(12),
+                 bitswapRefusedUsCoDrop(13),
+                 bitswapRefusedUsCpeDrop(14),
+                 channelChangeUsCoDrop(15),
+                 channelChangeUsCpeDrop(16),
+                 noiseIncreaseUsCoDrop(17),
+                 noiseIncreaseUsCpeDrop(18),
+                 bitswapRefusedDsCoDrop(19),
+                 bitswapRefusedDsCpeDrop(20),
+                 channelChangeDsCoDrop(21),
+                 channelChangeDsCpeDrop(22),
+                 noiseIncreaseDsCoDrop(23),
+                 noiseIncreaseDsCpeDrop(24),
+                 lomUsCoDrop(25),
+                 lomUsCpeDrop(26),
+                 lomDsCoDrop(27),
+                 lomDsCpeDrop(28),
+                 sraProblemUsCoDrop(29),
+                 sraProblemUsCpeDrop(30),
+                 sraFailedUsCoDrop(31),
+                 sraFailedUsCpeDrop(32),
+                 sraProblemDsCoDrop(33),
+                 sraProblemDsCpeDrop(34),
+                 sraRejectedDsCoDrop(35),
+                 sraRejectedDsCpeDrop(36),
+                 bitswapProblemUsCoDrop(37),
+                 bitswapProblemUsCpeDrop(38),
+                 bitswapFailedUsCoDrop(39),
+                 bitswapFailedUsCpeDrop(40),
+                 bitswapProblemDsCoDrop(41),
+                 bitswapProblemDsCpeDrop(42),
+                 bitswapRejectedDsCoDrop(43),
+                 bitswapRejectedDsCpeDrop(44),
+                 cpeSwitchedOff(45),
+                 cpeLost(46),
+                 coReset(47),
+                 coStop(48),
+                 unknown(49)
+                }                      
+      MAX-ACCESS  read-only                                 
+      STATUS      current                                   
+      DESCRIPTION                                           
+         "Indicates the last retrained information performed on the line.                   
+          Options:
+          1. none(1)                           - No record is available                                                                                                       
+          2. cpeL3Trigger(2)                 - The terminal initiates a low power consumption L3 request                                                                           
+          3. lomUsTriggerDra(3)             - The upstream noise margin is smaller than the minimum noise margin in rate dynamic adjustment                                      
+          4. lomDsTriggerDra(4)             - The downstream noise margin is smaller than the minimum noise margin in rate dynamic adjustment                                    
+          5. cpeNeverAnswerOam(5)           - No OAM response is received from the CPE all the time                                                                              
+          6. cpeNoMoreAnswerOam(6)         - No OAM response is received from the CPE                                                                                           
+          7. persistentNcdUs(7)              - Upstream continuous no cell delineation                                                                                                            
+          8. persistentNcdDs(8)              - Downstream continuous no cell delineation                                                                                                          
+          9. persistentLcdUs(9)              - Upstream continuous loss of cell delineation                                                                                                            
+          10.persistentLcdDs(10)             - Downstream continuous loss of cell delineation                                                                                                          
+          11.l2ProblemCoDrop(11)            - The CO is faulty during the switching from L0 to L2                                                                                
+          12.l2ProblemCpeDrop(12)           - The CPE is faulty during the switching from L0 to L2                                                                               
+          13.bitswapRefusedUsCoDrop(13)    - The CO goes offline when the upstream bit swap fault occurs 10 times consecutively                                                 
+          14.bitswapRefusedUsCpeDrop(14)   - The CPE goes offline when the downstream bit swap fault occurs 10 times consecutively                                              
+          15.channelChangeUsCoDrop(15)     - The CO goes offline when the upstream net rate changes                                                                             
+          16.channelChangeUsCpeDrop(16)    - The CPE goes offline when the upstream net rate changes                                                                            
+          17.noiseIncreaseUsCoDrop(17)     - The CO goes offline when the upstream noise increases                                                                              
+          18.noiseIncreaseUsCpeDrop(18)    - The CPE goes offline when the upstream noise increases                                                                             
+          19.bitswapRefusedDsCoDrop(19)    - The CO goes offline when the downstream bit swap fault occurs 10 times consecutively                                               
+          20.bitswapRefusedDsCpeDrop(20)   - The CPE goes offline when the downstream bit swap fault occurs 10 times consecutively                                              
+          21.channelChangeDsCoDrop(21)     - The CO goes offline when the downstream net rate changes                                                                           
+          22.channelChangeDsCpeDrop(22)    - The CPE goes offline when the downstream net rate changes                                                                          
+          23.noiseIncreaseDsCoDrop(23)     - The CO goes offline when the downstream noise increases                                                                            
+          24.noiseIncreaseDsCpeDrop(24)    - The CPE goes offline when the downstream noise increases                                                                           
+          25.lomUsCoDrop(25)                - The CO goes offline when the upstream noise margin is smaller than the minimum noise margin                                        
+          26.lomUsCpeDrop(26)               - The CPE goes offline when the upstream noise margin is smaller than the minimum noise margin                                       
+          27.lomDsCoDrop(27)                - The CO goes offline when the downstream noise margin is smaller than the minimum noise margin                                      
+          28.lomDsCpeDrop(28)               - The CPE goes offline when the downstream noise margin is smaller than the minimum noise margin                                     
+          29.sraProblemUsCoDrop(29)        - The CO goes offline when the upstream SRA is faulty                                                                                
+          30.sraProblemUsCpeDrop(30)       - The CPE goes offline when the upstream SRA is faulty                                                                               
+          31.sraFailedUsCoDrop(31)         - The CO goes offline when the upstream SRA fails                                                                                    
+          32.sraFailedUsCpeDrop(32)        - The CPE goes offline when the upstream SRA fails                                                                                   
+          33.sraProblemDsCoDrop(33)        - The CO goes offline when the downstream SRA is fault                                                                               
+          34.sraProblemDsCpeDrop(34)       - The CPE goes offline when the downstream SRA is faulty                                                                             
+          35.sraRejectedDsCoDrop(35)       - The CO goes offline when the downstream SRA is rejected                                                                            
+          36.sraRejectedDsCpeDrop(36)      - The CPE goes offline when the downstream SRA is rejected                                                                           
+          37.bitswapProblemUsCoDrop(37)    - The CO goes offline when the upstream bit swap is faulty                                                                           
+          38.bitswapProblemUsCpeDrop(38)   - The CPE goes offline when the upstream bit swap is faulty                                                                          
+          39.bitswapFailedUsCoDrop(39)     - The CO goes offline when the upstream bit swap fails                                                                               
+          40.bitswapFailedUsCpeDrop(40)    - The CPE goes offline when the upstream bit swap fails                                                                              
+          41.bitswapProblemDsCoDrop(41)    - The CO goes offline when the downstream bit swap is faulty                                                                         
+          42.bitswapProblemDsCpeDrop(42)   - The CPE goes offline when the downstream bit swap is faulty                                                                        
+          43.bitswapRejectedDsCoDrop(43)   - The CO goes offline when the downstream bit swap is rejected                                                                       
+          44.bitswapRejectedDsCpeDrop(44)  - The CPE goes offline when the downstream bit swap is rejected                                                                      
+          45.cpeSwitchedOff(45)              - The CPE power supply is shut down                                                                                                  
+          46.cpeLost(46)                      - The CPE is disconnected                                                                                                            
+          47.coReset(47)                      - The CO resets the chipset or line                                                                                                  
+          48.coStop(48)                       - The CO actively deactivate the port                                                                                               
+          49.unknown(49)                       - Unknown reason                                                                                                                     
+          " 
+            ::= { hwVdsl2nniLineEntry 31 }      
+
+        hwVdsl2nniUpboRxThreshDs OBJECT-TYPE
+            SYNTAX      Integer32
+            UNITS       "dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "This parameter reports the downstream received signal level threshold value 
+                 used in the Alternative Electrical Length Estimation method (ELE-M1). 
+                 This parameter represents an offset from -100 dB, 
+                 and ranges from -64 dB to 0 dB in steps of 1 dB. The invalid value is 
+                 2147483647. If data on the port cannot be queried, data on the port 
+                 is invalid, or no data is generated on the port because the port has 
+                 not been activated, the invalid value will be returned.
+                 Unit: dB
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.23.5"
+            ::= { hwVdsl2nniLineEntry 32 }
+            
+        hwVdsl2nniUpboRxThreshUs OBJECT-TYPE
+            SYNTAX      Integer32
+            UNITS       "dB"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "This parameter reports the upstream received signal level threshold value 
+                 used in the Alternative Electrical Length Estimation method (ELE-M1). 
+                 This parameter represents an offset from -100 dB, 
+                 and ranges from -64 dB to 0 dB in steps of 1 dB. The invalid value is 
+                 2147483647. If data on the port cannot be queried, data on the port 
+                 is invalid, or no data is generated on the port because the port has 
+                 not been activated, the invalid value will be returned.
+                 Unit: dB
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.23.6"
+            ::= { hwVdsl2nniLineEntry 33 }
+            
+        hwVdsl2nniLineStatusLineRateDs  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "bits/second"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The actual line rate downstream. The invalid value is 4294967295. 
+                If data on the port cannot be queried, data on the port is invalid, 
+                or no data is generated on the port because the port has not been 
+                activated, the invalid value will be returned.
+                 Unit: bits/second
+                "
+            ::= { hwVdsl2nniLineEntry 34 }  
+            
+        hwVdsl2nniLineStatusLineRateUs  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "bits/second"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The actual line rate upstream. The invalid value is 4294967295. 
+                If data on the port cannot be queried, data on the port is invalid, 
+                or no data is generated on the port because the port has not been 
+                activated, the invalid value will be returned.
+                 Unit: bits/second
+                "
+            ::= { hwVdsl2nniLineEntry 35 }              
+
+        --       vdsl2ChannelStatusTable   
+                  
+        hwVdsl2nniChannelStatusTable  OBJECT-TYPE
+            SYNTAX      SEQUENCE  OF  HwVdsl2nniChannelStatusEntry
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The table hwVdsl2nniChannelStatusTable contains status
+                 parameters of VDSL2NNI channel. 
+                 The indexes of this table are ifIndex and hwVdsl2nniChStatusUnit. 
+                "
+            ::= { hwVdsl2nniCfg 3 }
+        
+        hwVdsl2nniChannelStatusEntry  OBJECT-TYPE
+            SYNTAX      HwVdsl2nniChannelStatusEntry
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The table hwVdsl2nniChannelStatusTable contains status
+                 parameters of VDSL2NNI channel. 
+                 The indexes of this entry are ifIndex and hwVdsl2nniChStatusUnit.
+                "
+            INDEX  { ifIndex, hwVdsl2nniChStatusUnit }
+            ::= { hwVdsl2nniChannelStatusTable 1 }
+        
+        HwVdsl2nniChannelStatusEntry  ::=
+           SEQUENCE {
+              hwVdsl2nniChStatusUnit                HwXdslUnit,
+              hwVdsl2nniChStatusChannelNum          Unsigned32,
+              hwVdsl2nniChStatusActDataRate         Unsigned32,
+              hwVdsl2nniChStatusPrevDataRate        Unsigned32,
+              hwVdsl2nniChStatusActDelay            Unsigned32,
+              hwVdsl2nniChStatusAtmStatus           HwXdslChAtmStatus,
+              hwVdsl2nniChStatusPtmStatus           HwXdslChPtmStatus,
+              hwVdsl2nniChStatusINP                 Unsigned32,
+              hwVdsl2nniChStatusRSRedundancy        Unsigned32,
+              hwVdsl2nniChStatusRSSymbols           Unsigned32,
+              hwVdsl2nniChStatusInterDepth          Unsigned32,
+              hwVdsl2nniChStatusSymbolLength        Unsigned32,
+              hwVdsl2nniChStatusRSSize              Unsigned32,
+              hwVdsl2nniChStatusInterBlockLength    Unsigned32,
+              hwVdsl2nniChStatusLPATH	            Unsigned32,
+              hwVdsl2nniChStatusPhyRrrcBits	    Unsigned32,
+              hwVdsl2nniChStatusPhyRtxQueue	    Unsigned32,
+              hwVdsl2nniChStatusActNetDataRate      Unsigned32,
+              hwVdsl2nniChStatusActINPAgainstREIN   Unsigned32,
+              hwVdsl2nniChStatusUnlimitedVersionEtru Unsigned32
+           }
+        
+        hwVdsl2nniChStatusUnit  OBJECT-TYPE
+            SYNTAX      HwXdslUnit
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The termination unit xTU-C(1) or xTU-R(2)."
+            ::= { hwVdsl2nniChannelStatusEntry 1 }
+            
+        hwVdsl2nniChStatusChannelNum  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Provides the bearer channel number associated with this
+                 row (i.e., the channel ifIndex).
+                 This enables determining the channel configuration profile
+                 and the channel thresholds profile applicable for this
+                 bearer channel.
+                "
+            ::= { hwVdsl2nniChannelStatusEntry 2 }
+        
+        hwVdsl2nniChStatusActDataRate  OBJECT-TYPE
+            SYNTAX      Unsigned32(0..200000000)
+            UNITS       "bits/second"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "If retransmission is not used in a given transmit direction, 
+                 this parameter reports the actual net data rate at which the 
+                 bearer channel is operating in L0 power management state, and 
+                 in L1 or L2 states, the parameter contains the net data rate 
+                 in the previous L0 state.
+                 If retransmission is used in a given transmit direction, 
+                 this parameter reports the Expected Throughput(ETR) at which the 
+                 bearer channel is operating in L0 power management state, and in 
+                 L1 or L2 states, the parameter contains the Expected Throughput(ETR) 
+                 in the previous L0 state.
+                 The data rate is coded in steps of 1000 bit/s.
+                 The invalid value is 4294967295. If data on the port is invalid 
+                 or no data is generated on the port because the port has not been 
+                 activated, the invalid value will be returned.
+                 Unit: bits/second
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.2.1"
+            ::= { hwVdsl2nniChannelStatusEntry 3 }
+            
+        hwVdsl2nniChStatusPrevDataRate  OBJECT-TYPE
+            SYNTAX      Unsigned32(0..200000000)
+            UNITS       "bits/second"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "If retransmission is not used in a given transmit direction, this 
+                 parameter reports the previous net data rate the bearer channel 
+                 was operating at just before the latest net data rate change event 
+                 occurred, excluding all transitions between L0 state and L1 or L2 
+                 states.
+                 If retransmission is used in a given transmit direction, this 
+                 parameter reports the previous Expected Throughput(ETR)
+                 (as defined in G.998.4) the bearer channel was operating at just 
+                 before the latest ETR change event occurred, excluding all 
+                 transitions between L0 state and L1 or L2 states.
+                 The data rate is coded in steps of 1000 bit/s.
+                 The invalid value is 4294967295. If data on the port is invalid 
+                 or no data is generated on the port because the port has not 
+                 been activated, the invalid value will be returned.
+                 Unit: bits/second
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.2.2"
+            ::= { hwVdsl2nniChannelStatusEntry 4 }
+        
+        hwVdsl2nniChStatusActDelay  OBJECT-TYPE
+            SYNTAX      Unsigned32(0..8176)
+            UNITS       "milliseconds"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "If retransmission is not used in a given transmit direction, this 
+                 parameter is the actual one-way interleaving delay introduced by 
+                 the PMS-TC excluding delay in L1 and L2 state. In L1 and L2 state, 
+                 the parameter contains the interleaving delay in the previous L0 
+                 state.
+                 If retransmission is used in a given transmit direction, this 
+                 parameter specifies the actual value of the time-independent 
+                 component of the delay due to retransmission only.
+                 It is coded in ms (rounded to the nearest ms).
+                 The invalid value is 4294967295. If data on the port is invalid 
+                 or no data is generated on the port because the port has not 
+                 been activated, the invalid value will be returned.
+                 Unit: milliseconds
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.2.3"
+            ::= { hwVdsl2nniChannelStatusEntry 5 }
+        
+        hwVdsl2nniChStatusAtmStatus  OBJECT-TYPE
+            SYNTAX      HwXdslChAtmStatus
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates current state (existing failures) of the VDSL
+                 channel in case its Data Path is ATM.  This is a bit-map of
+                 possible conditions.  
+                 Options:
+                 1. noDefect(0)              - This bit position positively
+                                               reports that no defect or failure
+                                               exist
+                 2. noCellDelineation(1)     - The link was successfully
+                                               initialized but cell delineation
+                                               was never acquired on the
+                                               associated ATM data path
+                 3. lossOfCellDelineation(2) - Loss of cell delineation on the
+                                               associated ATM data path
+                 In case the channel is not of ATM Data Path, the object is set
+                 to '0'.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.1.4"
+            ::= { hwVdsl2nniChannelStatusEntry 6 }
+        
+        hwVdsl2nniChStatusPtmStatus  OBJECT-TYPE
+            SYNTAX      HwXdslChPtmStatus
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Indicates current state (existing failures) of the VDSL
+                 channel in case its Data Path is PTM.  This is a bit-map of
+                 possible conditions.  
+                 Options:
+                 1. noFailure(0)   - No failure
+                 2. outOfSync (1)  - Out of synchronization
+                 In case the channel is not of PTM Data Path the object is set
+                 to '0'.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.1.5"
+            ::= { hwVdsl2nniChannelStatusEntry 7 }
+        
+        hwVdsl2nniChStatusINP  OBJECT-TYPE
+            SYNTAX      Unsigned32(0..254)
+            UNITS       "0.1 DMT symbol"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "If retransmission is not used in a given transmit direction, this 
+                 parameter reports the actual impulse noise protection (INP) on the 
+                 bearer channel in the L0 state. In the L1 or L2 state, the parameter 
+                 contains the INP in the previous L0 state.
+                 If retransmission is used in a given transmit direction, this parameter 
+                 reports the actual impulse noise protection (INP) against SHINE on 
+                 the bearer channel in the L0 state. In the L2 state, the parameter 
+                 contains the INP in the previous L0 state.
+                 The value is coded in fractions of DMT symbols with a granularity of 0.1 symbols.
+                 The invalid value is 4294967295. If data on the port is invalid or no 
+                 data is generated on the port because the port has not been activated, 
+                 the invalid value will be returned.
+                 Unit: 0.1 DMT symbol
+                "
+            REFERENCE    "ITU-T G.997.1(200604), paragraph 7.5.2.4"
+            ::= { hwVdsl2nniChannelStatusEntry 8 }
+           
+        hwVdsl2nniChStatusRSRedundancy  OBJECT-TYPE
+            SYNTAX      Unsigned32(0..16)
+            UNITS       "byte"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The actual number of Reed-Solomon redundancy 
+                 bytes per codeword used in the latency path 
+                 in which the bearer channel is transported.
+                 The value is coded in bytes. 
+                 The value 0 indicates no Reed-Solomon coding.
+                 The invalid value is 4294967295. If data on the port is invalid 
+                 or no data is generated on the port because the port has not
+                 been activated, the invalid value will be returned.
+                 Unit: byte
+                "
+            REFERENCE    "ITU-T G.997.1(200604), paragraph 7.5.2.6.2"
+            ::= { hwVdsl2nniChannelStatusEntry 9 }
+            
+        hwVdsl2nniChStatusRSSymbols  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "0.01 DMT symbol"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The DMT Symbol number per codeword used in 
+                 the latency path in which the bearer channel
+                 is transported. The invalid value is 4294967295. 
+                 If data on the port is invalid or no data is generated 
+                 on the port because the port has not been activated, 
+                 the invalid value will be returned.
+                 Unit: 0.01 DMT symbol
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.2.3"
+            ::= { hwVdsl2nniChannelStatusEntry 10 }
+        
+        hwVdsl2nniChStatusInterDepth  OBJECT-TYPE
+            SYNTAX      Unsigned32(1..4096)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The actual Reed-Solomon codeword size used 
+                 in the latency path in which the bearer channel 
+                 is transported.
+                 The value ranges from 1 to 4096 by step of 1. 
+                 The value 1 indicates no interleaving. The invalid 
+                 value is 4294967295. If data on the port is invalid 
+                 or no data is generated on the port because the port 
+                 has not been activated, the invalid value will be returned.
+                "
+            REFERENCE    "ITU-T G.997.1(200604), paragraph 7.5.2.6.4"
+            ::= { hwVdsl2nniChannelStatusEntry 11 }
+           
+        hwVdsl2nniChStatusSymbolLength  OBJECT-TYPE
+            SYNTAX      Unsigned32(0..65535)
+            UNITS       "bit"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The actual number of bits per symbol assigned 
+                 to the latency path in which the bearer channel 
+                 is transported.
+                 This value does not include trellis overhead. The invalid 
+                 value is 4294967295. If data on the port is invalid or no 
+                 data is generated on the port because the port has not been 
+                 activated, the invalid value will be returned.
+                 Unit: bit
+                "
+            REFERENCE    "ITU-T G.997.1(200604), paragraph 7.5.2.6.3"
+            ::= { hwVdsl2nniChannelStatusEntry 12 }
+            
+        hwVdsl2nniChStatusRSSize  OBJECT-TYPE
+            SYNTAX      Unsigned32(0..255)
+            UNITS       "byte"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The actual Reed-Solomon codeword size used 
+                 in the latency path in which the bearer channel 
+                 is transported. The invalid value is 4294967295. 
+                 If data on the port is invalid or no data is 
+                 generated on the port because the port has not 
+                 been activated, the invalid value will be returned.
+                 Unit: byte
+                "
+            REFERENCE    "ITU-T G.997.1(200604), paragraph 7.5.2.6.1"
+            ::= { hwVdsl2nniChannelStatusEntry 13 }
+           
+        hwVdsl2nniChStatusInterBlockLength  OBJECT-TYPE
+            SYNTAX      Unsigned32(4..255)
+            UNITS       "byte"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The actual block length of the interleaver 
+                 used in the latency path in which the bearer 
+                 channel is transported. The invalid value is 4294967295. 
+                 If data on the port is invalid or no data is generated 
+                 on the port because the port has not been activated, 
+                 the invalid value will be returned.
+                 Unit: byte
+                "
+            REFERENCE    "ITU-T G.997.1(200604), paragraph 7.5.2.6.5"
+            ::= { hwVdsl2nniChannelStatusEntry 14 }
+           
+        hwVdsl2nniChStatusLPATH  OBJECT-TYPE
+            SYNTAX      Unsigned32(0..3)
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The index of the actual 
+                 latency path in which the bearer is transported.
+                 The invalid value is 4294967295. If data on the port 
+                 is invalid or no data is generated on the port because 
+                 the port has not been activated, the invalid value 
+                 will be returned.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.2.7"
+            ::= { hwVdsl2nniChannelStatusEntry 15 }    
+                       
+        hwVdsl2nniChStatusPhyRrrcBits OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The bits in the channel that used to retransmission.
+                 The invalid value is 4294967295. If data on the port cannot 
+                 be queried, data on the port is invalid, or no data is 
+                 generated on the port because the port has not been 
+                 activated, the invalid value will be returned.
+                "
+            ::= { hwVdsl2nniChannelStatusEntry 16 }       
+         
+        hwVdsl2nniChStatusPhyRtxQueue OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Queues in send buffer used for retransmission.
+                 The invalid value is 4294967295. If data on the port 
+                 cannot be queried, data on the port is invalid, or no 
+                 data is generated on the port because the port has 
+                 not been activated, the invalid value will be returned.
+                "
+            ::= { hwVdsl2nniChannelStatusEntry 17 } 
+            
+        hwVdsl2nniChStatusActNetDataRate OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "bits/second"             
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "In L0 state, this parameter reports the Net Data Rate at which the bearer channel is operating. 
+                 In L2 state, this parameter contains the Net Data Rate in the previous L0 state. 
+                 This parameter is optional if G.998.4 retransmission function is not supported.
+                 The data rate is coded in steps of 1000 bit/s. The invalid value is 4294967295. 
+                 If data on the port cannot be queried, data on the port is invalid, 
+                 or no data is generated on the port because the port has not been activated, 
+                 the invalid value will be returned.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.2.8"    
+            ::= { hwVdsl2nniChannelStatusEntry 18 }             
+            
+        hwVdsl2nniChStatusActINPAgainstREIN OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "If retransmission is used in a given transmit direction, 
+                 this parameter reports the actual impulse noise protection (INP) 
+                 against REIN (under specific conditions detailed in G.998.4) 
+                 on the bearer channel in the L0 state. In the L2 state, the 
+                 parameter contains the INP in the previous L0 state. The value 
+                 is coded in fractions of DMT symbols with a granularity of 0.1 symbols.
+                 The invalid value is 4294967295. If data on the port cannot be 
+                 queried, data on the port is invalid, or no data is generated 
+                 on the port because the port has not been activated, the invalid 
+                 value will be returned.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.2.9"     
+            ::= { hwVdsl2nniChannelStatusEntry 19 } 
+            
+        hwVdsl2nniChStatusUnlimitedVersionEtru OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "bits/second"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The unlimited version of expected throughput in kbit/s:(1 - RTxOH) * NDR. 
+                 This value is specified in G.998.4 (G.INP)."
+            ::= { hwVdsl2nniChannelStatusEntry 20 }         	   
+
+        --       vdsl2PrivSCStatusTable                
+        
+        hwVdsl2nniPrivSCStatusTable  OBJECT-TYPE
+            SYNTAX      SEQUENCE  OF  HwVdsl2nniPrivSCStatusEntry
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The table hwVdsl2nniPrivSCStatusTable contains status parameters
+                 of VDSL2NNI sub-carriers. 
+                 The indexes of this table are ifIndex and hwVdsl2nniPrivSCStatusDirection. 
+                "
+            ::= { hwVdsl2nniCfg 4 }
+            
+        hwVdsl2nniPrivSCStatusEntry  OBJECT-TYPE
+            SYNTAX      HwVdsl2nniPrivSCStatusEntry
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The table hwVdsl2nniPrivSCStatusTable contains status parameters
+                 of VDSL2NNI sub-carriers. 
+                 The indexes of this entry are ifIndex and hwVdsl2nniPrivSCStatusDirection.
+                "
+            INDEX  { ifIndex, hwVdsl2nniPrivSCStatusDirection }
+            ::= { hwVdsl2nniPrivSCStatusTable 1 }
+            
+        HwVdsl2nniPrivSCStatusEntry  ::=
+            SEQUENCE {
+              hwVdsl2nniPrivSCStatusDirection         HwXdslDirection,
+              hwVdsl2nniPrivSCStatusMtime             Unsigned32,
+              hwVdsl2nniPrivSCStatusSnr               OCTET STRING,
+              hwVdsl2nniPrivSCStatusBitsAlloc         OCTET STRING,
+              hwVdsl2nniPrivSCStatusGainAlloc         OCTET STRING
+            }
+        
+        hwVdsl2nniPrivSCStatusDirection  OBJECT-TYPE
+            SYNTAX      HwXdslDirection
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The direction of the sub-carrier either
+                 upstream or downstream.
+                "
+            ::= { hwVdsl2nniPrivSCStatusEntry 1 }    
+              
+        hwVdsl2nniPrivSCStatusMtime  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "symbols"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "SNR Measurement Time.  The number of symbols used to
+                 measure the SNR values on the respective transmission
+                 direction.  It should correspond to the value specified in the
+                 recommendation (e.g., the number of symbols in 1 second
+                 time interval for G.992.3).  This parameter corresponds to
+                 1 second in loop diagnostic procedure and should be updated
+                 otherwise.
+                 Unit: symbols
+                "
+            REFERENCE  "ITU-T G.997.1, paragraph 7.5.1.20.1 (SNRMTds)
+                        and paragraph 7.5.1.20.3 (SNRMTus)"
+            ::= { hwVdsl2nniPrivSCStatusEntry 2 }
+        
+        hwVdsl2nniPrivSCStatusSnr  OBJECT-TYPE
+            SYNTAX      OCTET STRING  (SIZE(0..4096))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The SNR Margin per sub-carrier, expressing the ratio between
+                 the received signal power and received noise power per
+                 subscriber.  It is an array of 4096 bytes, designed for
+                 supporting up to 4096 sub-carriers.
+                 The number of utilized octets on downstream direction depends
+                 on NSCds, and on upstream direction it depends on NSCus.  This
+                 value is referred here as NSC.
+                 Byte i (0 &lt;= i &lt; NSC) is set to a value in the range 0 to
+                 254 to indicate that the respective downstream or upstream sub-
+                 carrier i has SNR of: (-32 + Vdsl2SubcarrierSnr(i)/2) in dB
+                 (i.e., -32 to 95dB).
+                 The special value 255 means that no measurement could be done
+                 for the subcarrier because it is out of the PSD mask passband
+                 or that the noise PSD is out of range to be represented.
+                 Each value in this array is 8 bits wide.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.20.2 (SNRpsds)
+                          and paragraph 7.5.1.20.4 (SNRpsus)"
+            ::= { hwVdsl2nniPrivSCStatusEntry 3 }
+        
+        hwVdsl2nniPrivSCStatusBitsAlloc  OBJECT-TYPE
+            SYNTAX      OCTET STRING  (SIZE(0..2048))
+            UNITS       "bits"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The bits allocation per sub-carrier.  An array of 2048 bytes, 
+                 designed for supporting up to 4096 sub-carriers.
+                 The number of utilized nibbles on downstream direction depends
+                 on NSCds, and on upstream direction it depends on NSCus.  This
+                 value is referred here as NSC.
+                 Nibble i (0 &lt;= i &lt; NSC) is set to a value in the range 0
+                 to 15 to indicate that the respective downstream or upstream
+                 sub-carrier i has the same amount of bits allocation.
+                 Unit: bits
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.21.1 (BITSpsds)
+                         and paragraph 7.5.1.21.2 (BITSpsus)"
+             ::= { hwVdsl2nniPrivSCStatusEntry 4 }
+        
+        hwVdsl2nniPrivSCStatusGainAlloc  OBJECT-TYPE
+            SYNTAX      OCTET STRING  (SIZE(0..8192))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "The gain allocation per sub-carrier.  An array of 8192 bytes, 
+                 designed for supporting up to 4096 sub-carriers.
+                 The number of utilized octets on downstream direction depends
+                 on NSCds, and on upstream direction it depends on NSCus.  This
+                 value is referred here as NSC.
+                 Value i (0 &lt;= i &lt; NSC) is in the range 0 to 4093 to indicate
+                 that the respective downstream or upstream sub-carrier i has the
+                 same amount of gain value.
+                 The gain value is represented as a multiple of 1/512 on
+                 linear scale.  Each value in this array is 16 bits wide and is
+                 stored in big endian format.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.5.1.21.3 (GAINSpsds)
+                          and paragraph 7.5.1.21.4 (GAINSpsus)"
+            ::= { hwVdsl2nniPrivSCStatusEntry 5 }
+            
+        --  Vdsl2nniStatisticsTable       
+                
+   	hwVdsl2nniStatisticsTable  OBJECT-TYPE
+      	        SYNTAX      SEQUENCE  OF  HwVdsl2nniStatisticsEntry
+      	        MAX-ACCESS  not-accessible
+      	        STATUS      current
+      	        DESCRIPTION
+                   "The table hwVdsl2nniStatisticsTable contains statistics 
+                    of the VDSL2NNI.
+                    The index of this table is ifIndex.
+                   "
+	        ::= { hwVdsl2nniStatistics 1 }
+
+	hwVdsl2nniStatisticsEntry  OBJECT-TYPE
+		SYNTAX      HwVdsl2nniStatisticsEntry
+		MAX-ACCESS  not-accessible
+		STATUS      current
+		DESCRIPTION
+		   "The table hwVdsl2nniStatisticsTable contains statistics 
+		    of the VDSL2NNI.
+		    The index of this entry is ifIndex.
+		   "
+		INDEX  { ifIndex }
+		::= { hwVdsl2nniStatisticsTable 1 }
+
+   	HwVdsl2nniStatisticsEntry  ::=
+		SEQUENCE 
+		{
+		    hwVdsl2nniRxFrameCount  Counter32,
+		    hwVdsl2nniRxBytesCount  Counter32,
+		    hwVdsl2nniTxFrameCount  Counter32,
+		    hwVdsl2nniTxBytesCount  Counter32,
+		    hwVdsl2nniStatisticsClear INTEGER
+   	        }
+   	
+	hwVdsl2nniRxFrameCount  OBJECT-TYPE
+		SYNTAX      Counter32
+		UNITS       "frames"
+		MAX-ACCESS  read-only
+		STATUS      current
+      	        DESCRIPTION
+	           "The VDSL2NNI port receive OK frames."
+		::= { hwVdsl2nniStatisticsEntry 1 }
+		
+	hwVdsl2nniRxBytesCount  OBJECT-TYPE
+		SYNTAX      Counter32
+		UNITS       "bytes"
+		MAX-ACCESS  read-only
+		STATUS      current
+      	        DESCRIPTION
+	           "The VDSL2NNI port receive OK bytes."
+		::= { hwVdsl2nniStatisticsEntry 2 }
+		
+	hwVdsl2nniTxFrameCount  OBJECT-TYPE
+		SYNTAX      Counter32
+		UNITS       "frames"
+		MAX-ACCESS  read-only
+		STATUS      current
+      	        DESCRIPTION
+		   "The VDSL2NNI port transmit OK frames."
+		::= { hwVdsl2nniStatisticsEntry 3 }
+		
+	hwVdsl2nniTxBytesCount  OBJECT-TYPE
+		SYNTAX      Counter32
+		UNITS       "bytes"
+		MAX-ACCESS  read-only
+		STATUS      current
+      	        DESCRIPTION
+		   "The VDSL2NNI port transmit OK bytes."
+		::= { hwVdsl2nniStatisticsEntry 4 }				
+		
+	hwVdsl2nniStatisticsClear  OBJECT-TYPE
+		SYNTAX      INTEGER
+		{
+		    resetStat(1)
+		}
+		MAX-ACCESS  read-write
+		STATUS      current
+      	        DESCRIPTION
+		   "Clear the statistics of VDSL NNI, 
+		    Options:
+		    1. resetStat(1)  -clear the statistics
+		   "                              
+		::= { hwVdsl2nniStatisticsEntry 5 }
+            
+          --   PM line current counters       
+   
+        hwVdsl2nniPMLineCurrTable  OBJECT-TYPE
+            SYNTAX      SEQUENCE  OF  HwVdsl2nniPMLineCurrEntry
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The table hwVdsl2nniPMLineCurrTable contains current Performance
+                 Monitoring results of VDSL2NNI.  
+                 The indexes of this table are ifIndex and hwVdsl2nniPMLCurrUnit.
+                "
+            ::= { hwVdsl2nniPMLine 1 }
+        
+        hwVdsl2nniPMLineCurrEntry  OBJECT-TYPE
+            SYNTAX      HwVdsl2nniPMLineCurrEntry
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The table hwVdsl2nniPMLineCurrTable contains current Performance
+                 Monitoring results of VDSL2NNI.
+                 The indexes of this entry are ifIndex and hwVdsl2nniPMLCurrUnit.
+                "
+            INDEX  { ifIndex, hwVdsl2nniPMLCurrUnit }
+            ::= { hwVdsl2nniPMLineCurrTable 1 }
+        
+        HwVdsl2nniPMLineCurrEntry  ::=
+            SEQUENCE {
+              hwVdsl2nniPMLCurrUnit                    HwXdslUnit,
+              hwVdsl2nniPMLCurrValidIntervals          Unsigned32,
+              hwVdsl2nniPMLCurrInvalidIntervals        Unsigned32,
+              hwVdsl2nniPMLCurr15MTimeElapsed          Unsigned32,
+              hwVdsl2nniPMLCurr15MFecs                 Counter32,
+              hwVdsl2nniPMLCurr15MEs                   Counter32,
+              hwVdsl2nniPMLCurr15MSes                  Counter32,
+              hwVdsl2nniPMLCurr15MLoss                 Counter32,
+              hwVdsl2nniPMLCurr15MUas                  Counter32,
+              hwVdsl2nniPMLCurr15MLofs                 Counter32,
+              hwVdsl2nniPMLCurr15MLols                 Counter32,
+              hwVdsl2nniPMLCurr15MLops                 Counter32,             
+              hwVdsl2nniPMLCurr15MSosSuccess           Counter32,
+              hwVdsl2nniPMLCurr15MInmainpeq            OCTET STRING,
+              hwVdsl2nniPMLCurr15MInmame               Counter32,
+              hwVdsl2nniPMLCurr15MInmaiat              OCTET STRING,
+              hwVdsl2nniPMLineCurr15MStartTime         DateAndTime,
+              hwVdsl2nniPMLCurr15MLeftrs               Counter32,
+              hwVdsl2nniPMLCurr15MEfb                  Counter32, 
+              hwVdsl2nniPMLCurr15MMinEftr              Counter32
+            }
+        
+        hwVdsl2nniPMLCurrUnit  OBJECT-TYPE
+            SYNTAX      HwXdslUnit
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The termination unit XTUC{1} or XTUR{2}."
+            ::= { hwVdsl2nniPMLineCurrEntry 1 }
+        
+        hwVdsl2nniPMLCurrValidIntervals  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Valid intervals."
+            ::= { hwVdsl2nniPMLineCurrEntry 2 }
+        
+        hwVdsl2nniPMLCurrInvalidIntervals  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Invalid intervals."
+            ::= { hwVdsl2nniPMLineCurrEntry 3 }
+        
+        hwVdsl2nniPMLCurr15MTimeElapsed  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "seconds"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Total elapsed seconds in this interval.
+                 Unit: seconds
+                "
+            ::= { hwVdsl2nniPMLineCurrEntry 4 }
+        
+        hwVdsl2nniPMLCurr15MFecs  OBJECT-TYPE
+            SYNTAX      Counter32
+            UNITS       "seconds"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of seconds during this interval that there was at least
+                 one FEC correction event for one or more bearer channels in
+                 this line.  This parameter is inhibited during UAS or SES.
+                 Unit: seconds
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1"
+            ::= { hwVdsl2nniPMLineCurrEntry 5 }
+           
+        hwVdsl2nniPMLCurr15MEs  OBJECT-TYPE
+            SYNTAX      Counter32
+            UNITS       "seconds"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of seconds during this interval that there was:
+                 xTU-C: CRC-8 &gt;= 1 for one or more bearer channels OR
+                        LOS &gt;= 1 OR SEF &gt;=1 OR LPR &gt;= 1
+                 xTU-R: FEBE &gt;= 1 for one or more bearer channels OR
+                        LOS-FE &gt;=1 OR RDI &gt;=1 OR LPR-FE &gt;=1 .
+                 This parameter is inhibited during UAS.
+                 Unit: seconds
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1"
+            ::= { hwVdsl2nniPMLineCurrEntry 6 }
+        
+        hwVdsl2nniPMLCurr15MSes  OBJECT-TYPE
+            SYNTAX      Counter32
+            UNITS       "seconds"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of seconds during this interval that there was:
+                 xTU-C:  If G.998.4 is supported and retransmission is enabled 
+                         in the near-end received direction, a SES is declared 
+                         if during a 1-second interval, there is one or more 
+                         severe loss of error-free throughput (seftr) defect 
+                         in the near-end received direction.
+                         Or else, an SES is declared if, during a 1 second interval, 
+                         there are 18 or more CRC 8 anomalies in one or more of the 
+                         received bearer channels, or one or more LOS defects, or 
+                         one or more SEF defects, or one or more LPR defects.
+                        
+                 xTU-R: If G.998.4 is supported and retransmission is enabled in the 
+                        far-end received direction, a SES-LFE is declared if during 
+                        a 1-second interval, there is one or more severe loss of 
+                        error-free throughput (seftr) defect in the far-end received 
+                        direction.
+                        Or else, an SES is declared if, during a 1 second interval, 
+                        there are 18 or more FEBE anomalies in one or more of the 
+                        transmitted bearer channels, or one or more far end LOS 
+                        defects, or one or more RDI defects, or one or more LPR FE 
+                        defects.
+                 This parameter is inhibited during UAS.
+                 Unit: seconds
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1"
+            ::= { hwVdsl2nniPMLineCurrEntry 7 }
+        
+        hwVdsl2nniPMLCurr15MLoss  OBJECT-TYPE
+            SYNTAX      Counter32
+            UNITS       "seconds"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of seconds during this interval that there was LOS (or
+                 LOS-FE for xTU-R).
+                 Unit: seconds
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1"
+            ::= { hwVdsl2nniPMLineCurrEntry 8 }
+          
+        hwVdsl2nniPMLCurr15MUas  OBJECT-TYPE
+            SYNTAX      Counter32
+            UNITS       "seconds"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of seconds in Unavailability State during this
+                 interval.  Unavailability begins at the onset of 10
+                 contiguous severely-errored seconds, and ends at the
+                 onset of 10 contiguous seconds with no severely-errored
+                 seconds.
+                 Unit: seconds
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1"
+            ::= { hwVdsl2nniPMLineCurrEntry 9 }
+           
+        hwVdsl2nniPMLCurr15MLofs  OBJECT-TYPE
+            SYNTAX      Counter32
+            UNITS       "seconds"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of seconds in the current 15 minute interval when there was Loss of Framing.
+                 Unit: seconds
+                "
+            ::= { hwVdsl2nniPMLineCurrEntry 10 }
+            
+        hwVdsl2nniPMLCurr15MLols  OBJECT-TYPE
+            SYNTAX      Counter32
+            UNITS       "seconds"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of seconds in the current 15 minute interval when there was Loss of Link.
+                 Unit: seconds
+                "
+            ::= { hwVdsl2nniPMLineCurrEntry 11 }
+        
+        hwVdsl2nniPMLCurr15MLops  OBJECT-TYPE
+            SYNTAX      Counter32
+            UNITS       "seconds"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of seconds in the current 15 minute interval when there was Loss of Power.
+                 Unit: seconds
+                "
+            ::= { hwVdsl2nniPMLineCurrEntry 12 }  
+        
+        hwVdsl2nniPMLCurr15MSosSuccess  OBJECT-TYPE
+            SYNTAX      Counter32
+            UNITS       "times"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of the total number of successful SOS procedures initiated in the current 15 minute.
+                 Unit: times
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1"
+            ::= { hwVdsl2nniPMLineCurrEntry 13 }
+            
+        hwVdsl2nniPMLCurr15MInmainpeq  OBJECT-TYPE
+            SYNTAX      OCTET STRING  (SIZE(0..68))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "This parameter is a count of the INMAINPEQi anomalies 
+                 occurring on the line during current 15 minutes.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1"
+            ::= { hwVdsl2nniPMLineCurrEntry 14 }        
+            
+        hwVdsl2nniPMLCurr15MInmame  OBJECT-TYPE
+            SYNTAX      Counter32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "This parameter is a count of the INMAME anomalies 
+                 occurring on the line during current 15 minutes.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1"
+            ::= { hwVdsl2nniPMLineCurrEntry 15 }    
+            
+        hwVdsl2nniPMLCurr15MInmaiat  OBJECT-TYPE
+            SYNTAX      OCTET STRING  (SIZE(0..32))
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "This parameter is a count of the INMAIATi anomalies 
+                 occurring on the line during current 15 minutes.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1"
+            ::= { hwVdsl2nniPMLineCurrEntry 16 }    
+           
+        hwVdsl2nniPMLineCurr15MStartTime  OBJECT-TYPE
+            SYNTAX      DateAndTime
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Start time of the current 15-minute performance statistics."
+            ::= { hwVdsl2nniPMLineCurrEntry 17 }        
+            
+        hwVdsl2nniPMLCurr15MLeftrs     OBJECT-TYPE
+            SYNTAX      Counter32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "If retransmission is used in a given transmit direction, this parameter 
+                 is a count of the seconds with a near-end leftr defect present observed 
+                 over the 15 minutes accumulation period.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1.1.6 7.2.1.2.6"    
+            ::= { hwVdsl2nniPMLineCurrEntry 18 }
+                          
+        hwVdsl2nniPMLCurr15MEfb        OBJECT-TYPE
+            SYNTAX      Counter32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "If retransmission is used in a given transmit direction, this parameter 
+                 is a count of the number of error-free bits observed over the 15 minutes
+                 accumulation period.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1.1.7 7.2.1.2.7"     
+            ::= { hwVdsl2nniPMLineCurrEntry 19 } 
+            
+        hwVdsl2nniPMLCurr15MMinEftr    OBJECT-TYPE
+            SYNTAX      Counter32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "If retransmission is used in a given transmit direction, this parameter 
+                 reports the minimum of the EFTR(Error-free throughput rate) observed 
+                 over the 15 minutes accumulation period.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1.1.8 7.2.1.2.8"     
+            ::= { hwVdsl2nniPMLineCurrEntry 20 } 
+                                           
+          --          PM line init current counters     
+        
+        hwVdsl2nniPMLineCurrInitTable   OBJECT-TYPE
+            SYNTAX      SEQUENCE  OF  HwVdsl2nniPMLineCurrInitEntry
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The table hwVdsl2nniPMLineCurrInitTable contains current
+                 initialization counters of VDSL2NNI line.
+                 The index of this table is ifIndex.
+                "
+            ::= { hwVdsl2nniPMLine 2 }
+        
+        hwVdsl2nniPMLineCurrInitEntry  OBJECT-TYPE
+            SYNTAX      HwVdsl2nniPMLineCurrInitEntry
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The table hwVdsl2nniPMLineCurrInitTable contains current
+                 initialization counters of VDSL2NNI line.
+                 The index of this entry is ifIndex.
+                "
+            INDEX  { ifIndex }
+            ::= { hwVdsl2nniPMLineCurrInitTable 1 }
+        
+        HwVdsl2nniPMLineCurrInitEntry  ::=
+            SEQUENCE {
+              hwVdsl2nniPMLCurrInit15MTimeElapsed          Unsigned32,
+              hwVdsl2nniPMLCurrInit15MFullInits            Unsigned32,
+              hwVdsl2nniPMLCurrInit15MFailedFullInits      Unsigned32,
+              hwVdsl2nniPMLCurrInit15MShortInits           Unsigned32,
+              hwVdsl2nniPMLCurrInit15MFailedShortInits     Unsigned32,
+              hwVdsl2nniPMLineCurrInit15MStartTime         DateAndTime
+            }
+        
+        hwVdsl2nniPMLCurrInit15MTimeElapsed  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "seconds"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Total elapsed seconds in this interval.
+                 Unit: seconds
+                "
+            ::= { hwVdsl2nniPMLineCurrInitEntry 1 }
+           
+        hwVdsl2nniPMLCurrInit15MFullInits  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of full initializations attempted on the line
+                 (successful and failed) during this interval.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1"
+            ::= { hwVdsl2nniPMLineCurrInitEntry 2 }
+        
+        hwVdsl2nniPMLCurrInit15MFailedFullInits  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of failed full initializations on the line during this
+                 interval.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1"
+            ::= { hwVdsl2nniPMLineCurrInitEntry 3 }
+        
+        hwVdsl2nniPMLCurrInit15MShortInits  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of short initializations attempted on the line
+                 (successful and failed) during this interval.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1"
+            ::= { hwVdsl2nniPMLineCurrInitEntry 4 }
+        
+        hwVdsl2nniPMLCurrInit15MFailedShortInits  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of failed short initializations on the line during this
+                 interval.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.1"
+            ::= { hwVdsl2nniPMLineCurrInitEntry 5 }
+
+        hwVdsl2nniPMLineCurrInit15MStartTime  OBJECT-TYPE
+            SYNTAX      DateAndTime
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Start time of the current initializations 15-minute performance statistics."
+            ::= { hwVdsl2nniPMLineCurrInitEntry 6 } 
+            
+        --  PM channel current counters 
+                     
+        hwVdsl2nniPMChCurrTable        OBJECT-TYPE
+            SYNTAX      SEQUENCE  OF  HwVdsl2nniPMChCurrEntry
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The table hwVdsl2nniPMChCurrTable contains current Performance
+                 Monitoring results of VDSL2NNI channel. 
+                 The indexes of this table are ifIndex and hwVdsl2nniPMChCurrUnit.
+                "
+            ::= { hwVdsl2nniPMChannel 1 }
+        
+        hwVdsl2nniPMChCurrEntry  OBJECT-TYPE
+            SYNTAX      HwVdsl2nniPMChCurrEntry
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The table hwVdsl2nniPMChCurrTable contains current Performance
+                 Monitoring results of VDSL2NNI channel.
+                 The indexes of this entry are ifIndex and hwVdsl2nniPMChCurrUnit.
+                "
+            INDEX  { ifIndex, hwVdsl2nniPMChCurrUnit }
+            ::= { hwVdsl2nniPMChCurrTable 1 }
+        
+        HwVdsl2nniPMChCurrEntry  ::=
+            SEQUENCE {
+              hwVdsl2nniPMChCurrUnit                     HwXdslUnit,
+              hwVdsl2nniPMChCurrValidIntervals           Unsigned32,
+              hwVdsl2nniPMChCurrInvalidIntervals         Unsigned32,
+              hwVdsl2nniPMChCurr15MTimeElapsed           Unsigned32,
+              hwVdsl2nniPMChCurr15MCodingViolations      Unsigned32,
+              hwVdsl2nniPMChCurr15MCorrectedBlocks       Unsigned32,
+              hwVdsl2nniPMChCurr15MEncodedBlocks         Unsigned32,
+              hwVdsl2nniPMChCurr15MUncorrectableBlocks   Unsigned32,
+              hwVdsl2nniPMChCurr15MAtmCells              Counter32,
+              hwVdsl2nniPMChCurr15MPtmPackets            Counter32,  
+              hwVdsl2nniPMChCurr15MRtxCW		 Counter32,
+              hwVdsl2nniPMChCurr15MRtxCorrectedCW	 Counter32,
+              hwVdsl2nniPMChCurr15MRtxUncorrectedCW      Counter32,
+              hwVdsl2nniPMChCurr15MStartTime             DateAndTime
+            }
+        
+        hwVdsl2nniPMChCurrUnit  OBJECT-TYPE
+            SYNTAX      HwXdslUnit
+            MAX-ACCESS  not-accessible
+            STATUS      current
+            DESCRIPTION
+                "The termination unit."
+            ::= { hwVdsl2nniPMChCurrEntry 1 }
+           
+        hwVdsl2nniPMChCurrValidIntervals  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Valid intervals."
+            ::= { hwVdsl2nniPMChCurrEntry 2 }
+        
+        hwVdsl2nniPMChCurrInvalidIntervals  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Invalid intervals."
+            ::= { hwVdsl2nniPMChCurrEntry 3 }
+        
+        hwVdsl2nniPMChCurr15MTimeElapsed  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            UNITS       "seconds"
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Total elapsed seconds in this interval.
+                 Unit: seconds
+                "
+            ::= { hwVdsl2nniPMChCurrEntry 4 }
+        
+        hwVdsl2nniPMChCurr15MCodingViolations  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of CRC-8 (FEBE for xTU-R) anomalies occurring in the
+                 channel during the interval.  This parameter is inhibited
+                 during UAS or SES.  If the CRC is applied over multiple
+                 channels, then each related CRC-8 (or FEBE) anomaly should
+                 increment each of the counters related to the individual
+                 channels.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.2"
+            ::= { hwVdsl2nniPMChCurrEntry 5 }
+        
+        hwVdsl2nniPMChCurr15MCorrectedBlocks  OBJECT-TYPE
+            SYNTAX      Unsigned32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of FEC (FFEC for xTU-R) anomalies (corrected code words)
+                 occurring in the channel during the interval.  This parameter
+                 is inhibited during UAS or SES.  If the FEC is applied over
+                 multiple channels, then each related FEC (or FFEC) anomaly
+                 should increment each of the counters related to the
+                 individual channels.
+                "
+            REFERENCE    "ITU-T G.997.1, paragraph 7.2.2"
+            ::= { hwVdsl2nniPMChCurrEntry 6 }
+        
+        hwVdsl2nniPMChCurr15MEncodedBlocks  OBJECT-TYPE
+            SYNTAX      Unsigned32         
+            MAX-ACCESS  read-only          
+            STATUS      current            
+            DESCRIPTION                    
+                "Count of all encoded blocks received 
+                 on this channel within the current 15 minute interval.
+                "      
+            ::= { hwVdsl2nniPMChCurrEntry 7 }
+            
+        hwVdsl2nniPMChCurr15MUncorrectableBlocks  OBJECT-TYPE
+            SYNTAX      Unsigned32         
+            MAX-ACCESS  read-only          
+            STATUS      current            
+            DESCRIPTION                    
+                "Count of all blocks received with 
+                 uncorrectable errors on this channel within the current 15 minute interval.
+                "      
+            ::= { hwVdsl2nniPMChCurrEntry 8 }
+        
+        hwVdsl2nniPMChCurr15MAtmCells  OBJECT-TYPE
+            SYNTAX      Counter32         
+            MAX-ACCESS  read-only          
+            STATUS      current            
+            DESCRIPTION                    
+                "Count of Atm Cells received
+                 within the current 15 minute interval.
+                "      
+            ::= { hwVdsl2nniPMChCurrEntry 9 }
+        
+        hwVdsl2nniPMChCurr15MPtmPackets  OBJECT-TYPE
+            SYNTAX      Counter32         
+            MAX-ACCESS  read-only          
+            STATUS      current            
+            DESCRIPTION                    
+                "Count of Ptm Packet received
+                 within the current 15 minute interval.
+                "      
+            ::= { hwVdsl2nniPMChCurrEntry 10 }
+           
+        hwVdsl2nniPMChCurr15MRtxCW  OBJECT-TYPE
+            SYNTAX      Counter32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+               "Count of units request retransmission within the current 15 minute interval."
+            ::= { hwVdsl2nniPMChCurrEntry 11 }
+           
+        hwVdsl2nniPMChCurr15MRtxCorrectedCW  OBJECT-TYPE
+            SYNTAX      Counter32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of units corrected by retransmission within the current 15 minute interval."
+            ::= { hwVdsl2nniPMChCurrEntry 12 }
+           
+        hwVdsl2nniPMChCurr15MRtxUncorrectedCW  OBJECT-TYPE
+            SYNTAX      Counter32
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Count of units uncorrected by retransmission within the current 15 minute interval."
+            ::= { hwVdsl2nniPMChCurrEntry 13 }
+
+        hwVdsl2nniPMChCurr15MStartTime  OBJECT-TYPE
+            SYNTAX      DateAndTime
+            MAX-ACCESS  read-only
+            STATUS      current
+            DESCRIPTION
+                "Start time of the channel current 15-minute performance statistics."
+            ::= { hwVdsl2nniPMChCurrEntry 14 }    
+
+ END     

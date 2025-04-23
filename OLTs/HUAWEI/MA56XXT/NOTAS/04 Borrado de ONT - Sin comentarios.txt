@@ -1,0 +1,11 @@
+****************************************************
+***     DESPROVISIÓN   0/0/0 ONT ID 0           ****
+***  SERVICIOS DE CLIENTE 1000 - 2000 - 5000    ****
+****************************************************
+
+undo service-port 1000
+undo service-port 2000
+undo service-port 5000
+interface gpon 0/0
+ont delete 0 4
+quit

@@ -1,0 +1,8 @@
+Activar snmp en OLT Huawei.
+
+En primer lugar en modo config se hace:
+display snmp-agent sys-info --> donde vemos si hay alguno activo.
+
+Si no esta activado:
+snmp-agent community read publicinstelnet
+snmp-agent community write privateinstelnet

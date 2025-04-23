@@ -1,0 +1,8 @@
+
+
+undo service-port 1001
+undo service-port 1002
+undo service-port 1003
+interface gpon 0/5
+ont delete 0 0
+quit
