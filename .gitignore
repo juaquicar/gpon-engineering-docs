@@ -1,0 +1,73 @@
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos de log
+*.log
+
+# Entornos virtuales (Python, Node, etc.)
+env/
+venv/
+ENV/
+node_modules/
+
+# Archivos de dependencias
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+poetry.lock
+
+# Archivos temporales de editores
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# Archivos de compilación
+dist/
+build/
+out/
+target/
+
+# Python
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.pytest_cache/
+.coverage
+*.egg
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# C/C++
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Otros
+*.bak
+*.tmp
+*.temp
+
+# Archivos de configuración de sistema
+.env
+.env.*
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Git
+*.orig
