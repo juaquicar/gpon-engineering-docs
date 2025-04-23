@@ -1,6 +1,6 @@
 # Documentación de Ingeniería GPON
 
-Repositorio técnico completo para la construcción, gestión y aprovisionamiento de redes GPON, incluyendo OLTs de distintos fabricantes (Huawei, ZTE, Nokia, etc.).
+Repositorio técnico completo para la construcción, gestión y provisionamiento de redes GPON, incluyendo OLTs de distintos fabricantes (Huawei, ZTE, Nokia, etc.).
 
 ## 📚 Contenido principal
 

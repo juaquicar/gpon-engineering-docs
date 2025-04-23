@@ -1,4 +1,4 @@
-## 4. Bloque III – Aprovisionamiento de ONT y asignación de servicios
+## 4. Bloque III – Provisionamiento de ONT y asignación de servicios
 
 ### 4.1 Asignar VLAN nativa en la ONT (si no está en el SRVPROFILE)
 

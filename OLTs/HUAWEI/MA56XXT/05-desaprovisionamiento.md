@@ -1,4 +1,4 @@
-## 5. Bloque IV – Desaprovisionamiento y eliminación de ONTs
+## 5. Bloque IV – Desprovisionamiento y eliminación de ONTs
 
 Cuando un cliente se da de baja o se reemplaza una ONT, es importante limpiar su configuración en la OLT para evitar conflictos y liberar recursos.
 

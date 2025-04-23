@@ -131,7 +131,7 @@ Cuando registras una ONT en una OLT, asocias:
 - Un **ONT Profile** (define el hardware, número de puertos, etc.)
 - Un **ONT-SRVProfile** (define cómo deben comportarse los servicios sobre esa ONT)
 
-Juntos forman una plantilla completa de aprovisionamiento.
+Juntos forman una plantilla completa de provisionamiento.
 
 
 ```bash
